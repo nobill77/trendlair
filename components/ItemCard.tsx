@@ -76,3 +76,12 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
 
         {item.tags && item.tags.length > 0 && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+            {item.tags.slice(0, 4).map((tag) => (
+              <TagBadge key={tag} tag={tag} />
+            ))}
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+}
