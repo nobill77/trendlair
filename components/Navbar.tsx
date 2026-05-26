@@ -2,22 +2,27 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase-browser";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const [bookmarkCount, setBookmarkCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) { setBookmarkCount(0); return; }
+    supabase
+      .from("bookmarks")
+      .select("id", { count: "exact", head: true })
+      .then(({ count }) => setBookmarkCount(count || 0));
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
     router.push("/");
   };
-
-  const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/discover", label: "Discover" },
-    ...(user ? [{ href: "/bookmarks", label: "Bookmarks" }] : []),
-  ];
 
   return (
     <nav style={{
@@ -44,15 +49,32 @@ export default function Navbar() {
       </Link>
 
       <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-        {navLinks.map(({ href, label }) => (
+        {[{ href: "/", label: "Home" }, { href: "/discover", label: "Discover" }].map(({ href, label }) => (
           <Link key={href} href={href} style={{
             textDecoration: "none", fontSize: "12px",
             letterSpacing: "0.08em", textTransform: "uppercase",
             color: pathname === href ? "var(--accent)" : "var(--muted)",
-          }}>
-            {label}
-          </Link>
+          }}>{label}</Link>
         ))}
+
+        {user && (
+          <Link href="/bookmarks" style={{
+            textDecoration: "none", fontSize: "12px",
+            letterSpacing: "0.08em", textTransform: "uppercase",
+            color: pathname === "/bookmarks" ? "var(--accent)" : "var(--muted)",
+            display: "flex", alignItems: "center", gap: "6px",
+          }}>
+            Bookmarks
+            {bookmarkCount > 0 && (
+              <span style={{
+                background: "var(--accent)", color: "#000",
+                borderRadius: "999px", fontSize: "10px",
+                fontWeight: 700, padding: "1px 6px",
+                fontFamily: "var(--font-mono)",
+              }}>{bookmarkCount}</span>
+            )}
+          </Link>
+        )}
 
         {user ? (
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
