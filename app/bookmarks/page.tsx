@@ -16,15 +16,30 @@ export default function BookmarksPage() {
     if (authLoading) return;
     if (!user) { router.push("/login"); return; }
 
-    supabase
-      .from("bookmarks")
-      .select(`item_id, items(*)`)
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        if (data) setItems(data.map((b: any) => b.items).filter(Boolean));
+    async function fetchBookmarks() {
+      const { data: bookmarkData } = await supabase
+        .from("bookmarks")
+        .select("item_id")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
+
+      if (!bookmarkData || bookmarkData.length === 0) {
         setLoading(false);
-      });
+        return;
+      }
+
+      const itemIds = bookmarkData.map((b) => b.item_id);
+
+      const { data: itemsData } = await supabase
+        .from("items")
+        .select("*")
+        .in("id", itemIds);
+
+      if (itemsData) setItems(itemsData);
+      setLoading(false);
+    }
+
+    fetchBookmarks();
   }, [user, authLoading, router]);
 
   if (authLoading || loading) return (
@@ -46,21 +61,8 @@ export default function BookmarksPage() {
         </div>
 
         {items.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "5rem 2rem", color: "var(--muted)" }}>
+          <div style={{ textAlign: "center", padding: "5rem 2rem" }}>
             <p style={{ fontSize: "48px", marginBottom: "1rem" }}>🔖</p>
             <p style={{ fontFamily: "var(--font-display)", fontSize: "20px", color: "var(--text)", marginBottom: "0.5rem" }}>
               No bookmarks yet
             </p>
-            <p style={{ fontSize: "13px", fontFamily: "var(--font-mono)" }}>
-              Save repos and articles you love from the Discover page
-            </p>
-          </div>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.5rem" }}>
-            {items.map((item) => <ItemCard key={item.id} item={item} />)}
-          </div>
-        )}
-      </div>
-    </main>
-  );
-}
