@@ -7,27 +7,19 @@ import { Item } from "@/lib/supabase";
 import ItemCard from "@/components/ItemCard";
 
 export default function BookmarksPage() {
-  const { loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (authLoading) return;
+    if (!user) { router.push("/login"); return; }
 
     async function fetchBookmarks() {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-
-      if (!currentUser) {
-        router.push("/login");
-        return;
-      }
-
       const { data: bookmarkData } = await supabase
         .from("bookmarks")
-        .select("item_id")
-        .eq("user_id", currentUser.id)
-        .order("created_at", { ascending: false });
+        .select("item_id");
 
       if (!bookmarkData || bookmarkData.length === 0) {
         setLoading(false);
@@ -46,7 +38,7 @@ export default function BookmarksPage() {
     }
 
     fetchBookmarks();
-  }, [authLoading, router]);
+  }, [user, authLoading, router]);
 
   if (authLoading || loading) return (
     <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
