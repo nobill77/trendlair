@@ -7,20 +7,26 @@ import { Item } from "@/lib/supabase";
 import ItemCard from "@/components/ItemCard";
 
 export default function BookmarksPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { loading: authLoading } = useAuth();
   const router = useRouter();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { router.push("/login"); return; }
 
     async function fetchBookmarks() {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+      if (!currentUser) {
+        router.push("/login");
+        return;
+      }
+
       const { data: bookmarkData } = await supabase
         .from("bookmarks")
         .select("item_id")
-        .eq("user_id", user!.id)
+        .eq("user_id", currentUser.id)
         .order("created_at", { ascending: false });
 
       if (!bookmarkData || bookmarkData.length === 0) {
@@ -28,7 +34,7 @@ export default function BookmarksPage() {
         return;
       }
 
-      const itemIds = bookmarkData.map((b) => b.item_id);
+      const itemIds = bookmarkData.map((b: any) => b.item_id);
 
       const { data: itemsData } = await supabase
         .from("items")
@@ -40,7 +46,7 @@ export default function BookmarksPage() {
     }
 
     fetchBookmarks();
-  }, [user, authLoading, router]);
+  }, [authLoading, router]);
 
   if (authLoading || loading) return (
     <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -66,3 +72,16 @@ export default function BookmarksPage() {
             <p style={{ fontFamily: "var(--font-display)", fontSize: "20px", color: "var(--text)", marginBottom: "0.5rem" }}>
               No bookmarks yet
             </p>
+            <p style={{ fontSize: "13px", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+              Save repos and articles you love from the Discover page
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.5rem" }}>
+            {items.map((item, i) => <ItemCard key={item.id} item={item} index={i} />)}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
