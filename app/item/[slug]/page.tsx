@@ -157,7 +157,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
                 textTransform: "uppercase",
               }}
             >
-              View on GitHub →
+              {item.type === "article" ? "View on HackerNews →" : "View on GitHub →"}
             </a>
           )}
           <Link
