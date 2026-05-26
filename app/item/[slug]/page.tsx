@@ -1,0 +1,275 @@
+import { supabase } from "@/lib/supabase";
+import type { Item } from "@/lib/supabase";
+import ItemCard from "@/components/ItemCard";
+import TagBadge from "@/components/TagBadge";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+interface ItemPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function ItemPage({ params }: ItemPageProps) {
+  const { slug } = await params;
+
+  // Get main item
+  const { data: item } = await supabase
+    .from("items")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  if (!item) notFound();
+
+  // Get related items: same tags, exclude self
+  let relatedItems: Item[] = [];
+  if (item.tags && item.tags.length > 0) {
+    const { data: related } = await supabase
+      .from("items")
+      .select("*")
+      .contains("tags", [item.tags[0]])
+      .neq("id", item.id)
+      .order("trend_score", { ascending: false })
+      .limit(3);
+
+    relatedItems = related || [];
+  }
+
+  return (
+    <main
+      style={{
+        minHeight: "100vh",
+        paddingTop: "56px",
+        maxWidth: "1000px",
+        margin: "0 auto",
+        padding: "calc(56px + 3rem) 2rem 5rem",
+      }}
+    >
+      {/* Breadcrumb */}
+      <div
+        style={{
+          marginBottom: "2.5rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          fontSize: "12px",
+          color: "var(--muted)",
+        }}
+      >
+        <Link href="/discover" style={{ color: "var(--muted)", textDecoration: "none" }}>
+          Discover
+        </Link>
+        <span>/</span>
+        <span style={{ color: "var(--text)" }}>{item.title}</span>
+      </div>
+
+      {/* Header */}
+      <div
+        style={{
+          borderBottom: "1px solid var(--border)",
+          paddingBottom: "2.5rem",
+          marginBottom: "2.5rem",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <span
+            style={{
+              padding: "4px 12px",
+              border: "1px solid rgba(200,255,0,0.3)",
+              borderRadius: "4px",
+              fontSize: "10px",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "var(--accent)",
+              fontWeight: 700,
+            }}
+          >
+            {item.type}
+          </span>
+          {item.trend_score > 0 && (
+            <span style={{ fontSize: "13px", color: "var(--muted)" }}>
+              ⭐ {item.trend_score.toLocaleString()} stars
+            </span>
+          )}
+        </div>
+
+        <h1
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(2rem, 5vw, 4rem)",
+            fontWeight: 800,
+            letterSpacing: "-0.04em",
+            color: "var(--text)",
+            lineHeight: 1.05,
+            marginBottom: "1.5rem",
+          }}
+        >
+          {item.title}
+        </h1>
+
+        <p
+          style={{
+            fontSize: "16px",
+            color: "var(--muted)",
+            lineHeight: 1.7,
+            maxWidth: "700px",
+            marginBottom: "2rem",
+          }}
+        >
+          {item.description}
+        </p>
+
+        {/* Tags */}
+        {item.tags && item.tags.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "2rem" }}>
+            {item.tags.map((tag: string) => (
+              <TagBadge key={tag} tag={tag} />
+            ))}
+          </div>
+        )}
+
+        {/* CTA buttons */}
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          {item.url && (
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "12px 28px",
+                background: "var(--accent)",
+                color: "#000",
+                borderRadius: "8px",
+                fontWeight: 700,
+                fontSize: "12px",
+                letterSpacing: "0.08em",
+                textDecoration: "none",
+                textTransform: "uppercase",
+              }}
+            >
+              View on GitHub →
+            </a>
+          )}
+          <Link
+            href="/discover"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "12px 28px",
+              border: "1px solid var(--border)",
+              color: "var(--muted)",
+              borderRadius: "8px",
+              fontSize: "12px",
+              letterSpacing: "0.08em",
+              textDecoration: "none",
+              textTransform: "uppercase",
+            }}
+          >
+            ← Back
+          </Link>
+        </div>
+      </div>
+
+      {/* Meta info */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+          gap: "1px",
+          background: "var(--border)",
+          border: "1px solid var(--border)",
+          borderRadius: "12px",
+          overflow: "hidden",
+          marginBottom: "4rem",
+        }}
+      >
+        {[
+          { label: "Type", value: item.type },
+          { label: "Stars", value: item.trend_score?.toLocaleString() || "—" },
+          {
+            label: "Added",
+            value: new Date(item.created_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+          },
+          { label: "Tags", value: item.tags?.length || 0 },
+        ].map(({ label, value }) => (
+          <div
+            key={label}
+            style={{
+              padding: "1.5rem",
+              background: "var(--surface)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "10px",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "var(--muted)",
+                marginBottom: "8px",
+              }}
+            >
+              {label}
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "var(--text)",
+              }}
+            >
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Related items */}
+      {relatedItems.length > 0 && (
+        <section>
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "20px",
+              fontWeight: 700,
+              color: "var(--text)",
+              marginBottom: "1.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <span style={{ color: "var(--accent)" }}>↗</span>
+            Related Items
+          </h2>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: "1rem",
+            }}
+          >
+            {relatedItems.map((related: Item, i: number) => (
+              <ItemCard key={related.id} item={related} index={i} />
+            ))}
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}
