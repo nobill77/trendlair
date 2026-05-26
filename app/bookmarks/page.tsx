@@ -35,8 +35,7 @@ export default function BookmarksPage() {
       }
 
       const itemIds = bookmarkData.map((b: any) => b.item_id);
-      setDebug("Found " + bookmarkData.length + " bookmarks");
-
+      
       const { data: itemsData, error: iError } = await supabase
         .from("items")
         .select("*")
