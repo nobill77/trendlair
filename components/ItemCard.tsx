@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { Item } from "@/lib/supabase";
 import TagBadge from "./TagBadge";
+import BookmarkButton from "./BookmarkButton";
 
 const CARD_COLORS = [
   "card-color-0",
-  "card-color-1", 
+  "card-color-1",
   "card-color-2",
   "card-color-3",
   "card-color-4",
@@ -12,7 +13,6 @@ const CARD_COLORS = [
 
 export default function ItemCard({ item, index = 0 }: { item: Item; index?: number }) {
   const colorClass = CARD_COLORS[index % CARD_COLORS.length];
-
   return (
     <Link href={`/item/${item.slug}`} style={{ textDecoration: "none" }}>
       <div
@@ -41,11 +41,14 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
           }}>
             {item.type}
           </span>
-          {item.trend_score > 0 && (
-            <span style={{ fontSize: "11px", color: "var(--muted)" }}>
-              ⭐ {item.trend_score.toLocaleString()}
-            </span>
-          )}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {item.trend_score > 0 && (
+              <span style={{ fontSize: "11px", color: "var(--muted)" }}>
+                ⭐ {item.trend_score.toLocaleString()}
+              </span>
+            )}
+            <BookmarkButton itemId={item.id} />
+          </div>
         </div>
 
         <h2 style={{
@@ -73,12 +76,3 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
 
         {item.tags && item.tags.length > 0 && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-            {item.tags.slice(0, 4).map((tag) => (
-              <TagBadge key={tag} tag={tag} />
-            ))}
-          </div>
-        )}
-      </div>
-    </Link>
-  );
-}
