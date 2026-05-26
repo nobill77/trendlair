@@ -18,7 +18,7 @@ export default function BookmarksPage() {
 
     supabase
       .from("bookmarks")
-      .select("item_id, items(*)")
+      ..select(`item_id, items(*)`)
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .then(({ data }) => {
