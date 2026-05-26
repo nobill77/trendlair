@@ -20,7 +20,6 @@ async function insertItem(item) {
   console.log(`Added: ${item.title}`);
 }
 
-// GitHub fetch
 async function fetchGitHub() {
   console.log("Fetching GitHub...");
   const headers = { "User-Agent": "discovery-engine" };
@@ -50,18 +49,24 @@ async function fetchGitHub() {
   }
 }
 
-// HackerNews fetch
 async function fetchHackerNews() {
   console.log("Fetching HackerNews...");
+
+  await supabase.from("items").delete().eq("type", "article");
+  console.log("Deleted old articles");
+
   const res = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json");
   const ids = await res.json();
-  const top20 = ids.slice(0, 20);
-  for (const id of top20) {
+  const top30 = ids.slice(0, 30);
+
+  for (const id of top30) {
     const storyRes = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
     const story = await storyRes.json();
     if (!story || !story.url || story.type !== "story") continue;
+
     const slug = makeSlug(`hn-${story.id}`);
-    await insertItem({
+
+    await supabase.from("items").insert({
       title: story.title,
       description: `HackerNews · ${story.score} points · ${story.descendants || 0} comments`,
       type: "article",
@@ -72,6 +77,8 @@ async function fetchHackerNews() {
       stars: story.score,
       slug: slug,
     });
+
+    console.log(`Added article: ${story.title}`);
   }
 }
 
