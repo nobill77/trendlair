@@ -29,7 +29,7 @@ export default function BookmarksPage() {
       }
 
       if (!bookmarkData || bookmarkData.length === 0) {
-        setDebug("No bookmarks found. User: " + user.id);
+        setDebug("No bookmarks found. User: " + user?.id);
         setLoading(false);
         return;
       }
