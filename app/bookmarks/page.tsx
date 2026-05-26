@@ -11,27 +11,40 @@ export default function BookmarksPage() {
   const router = useRouter();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [debug, setDebug] = useState("");
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) { router.push("/login"); return; }
 
     async function fetchBookmarks() {
-      const { data: bookmarkData } = await supabase
+      const { data: bookmarkData, error: bError } = await supabase
         .from("bookmarks")
         .select("item_id");
 
+      if (bError) {
+        setDebug("Bookmarks error: " + bError.message);
+        setLoading(false);
+        return;
+      }
+
       if (!bookmarkData || bookmarkData.length === 0) {
+        setDebug("No bookmarks found. User: " + user.id);
         setLoading(false);
         return;
       }
 
       const itemIds = bookmarkData.map((b: any) => b.item_id);
+      setDebug("Found " + bookmarkData.length + " bookmarks");
 
-      const { data: itemsData } = await supabase
+      const { data: itemsData, error: iError } = await supabase
         .from("items")
         .select("*")
         .in("id", itemIds);
+
+      if (iError) {
+        setDebug("Items error: " + iError.message);
+      }
 
       if (itemsData) setItems(itemsData);
       setLoading(false);
@@ -53,20 +66,17 @@ export default function BookmarksPage() {
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "28px", fontWeight: 800, color: "var(--text)", marginBottom: "0.5rem" }}>
             🔖 My Bookmarks
           </h1>
-          <p style={{ color: "var(--muted)", fontSize: "13px", fontFamily: "var(--font-mono)" }}>
-            {items.length} saved item{items.length !== 1 ? "s" : ""}
-          </p>
+          {debug && (
+            <p style={{ color: "yellow", fontSize: "12px", fontFamily: "var(--font-mono)", background: "#333", padding: "8px", borderRadius: "4px" }}>
+              DEBUG: {debug}
+            </p>
+          )}
         </div>
 
         {items.length === 0 ? (
           <div style={{ textAlign: "center", padding: "5rem 2rem" }}>
             <p style={{ fontSize: "48px", marginBottom: "1rem" }}>🔖</p>
-            <p style={{ fontFamily: "var(--font-display)", fontSize: "20px", color: "var(--text)", marginBottom: "0.5rem" }}>
-              No bookmarks yet
-            </p>
-            <p style={{ fontSize: "13px", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-              Save repos and articles you love from the Discover page
-            </p>
+            <p style={{ fontFamily: "var(--font-display)", fontSize: "20px", color: "var(--text)", marginBottom: "0.5rem" }}>No bookmarks yet</p>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.5rem" }}>
