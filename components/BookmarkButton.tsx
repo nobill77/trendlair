@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
 
-export default function BookmarkButton({ itemId }: { itemId: string }) {
+export default function BookmarkButton({ itemId, onRemove }: { itemId: string; onRemove?: () => void }) {
   const { user } = useAuth();
   const router = useRouter();
   const [bookmarked, setBookmarked] = useState(false);
@@ -30,6 +30,7 @@ export default function BookmarkButton({ itemId }: { itemId: string }) {
       await supabase.from("bookmarks").delete()
         .eq("user_id", user.id).eq("item_id", itemId);
       setBookmarked(false);
+      onRemove?.();
     } else {
       await supabase.from("bookmarks")
         .insert({ user_id: user.id, item_id: itemId });
@@ -58,7 +59,7 @@ export default function BookmarkButton({ itemId }: { itemId: string }) {
         gap: "4px",
       }}
     >
-      {bookmarked ? "🔖 Saved" : "🔖 Save"}
+      {loading ? "..." : bookmarked ? "🔖 Saved" : "🔖 Save"}
     </button>
   );
 }
