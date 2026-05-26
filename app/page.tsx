@@ -37,7 +37,7 @@ export default function HomePage() {
         </div>
 
         <div style={{ display: "flex", gap: "3rem", marginTop: "4rem", flexWrap: "wrap", justifyContent: "center", opacity: 0, animation: "fadeUp 0.8s 0.3s ease forwards" }}>
-          {[{ label: "Repos Tracked", value: "60+" }, { label: "Updated", value: "Daily" }, { label: "Topics", value: "AI · LLM · Dev" }, { label: "Free", value: "100%" }].map(({ label, value }) => (
+          {[{ label: "Items Tracked", value: "110+" }, { label: "Updated", value: "Daily" }, { label: "Topics", value: "AI · LLM · Dev" }, { label: "Free", value: "100%" }].map(({ label, value }) => (
             <div key={label} style={{ textAlign: "center" }}>
               <div style={{ fontSize: "20px", fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--text)" }}>{value}</div>
               <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>{label}</div>
