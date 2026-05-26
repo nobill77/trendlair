@@ -11,6 +11,7 @@ const ALL_TAGS = ["ai", "machine-learning", "llm", "developer-tools", "openai"];
 export default async function DiscoverPage({ searchParams }: DiscoverPageProps) {
   const params = await searchParams;
   const activeTag = params.tag;
+  const activeType = params.type;
   const searchQuery = params.q;
 
   let query = supabase
@@ -20,9 +21,22 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     .limit(60);
 
   if (activeTag) query = query.contains("tags", [activeTag]);
+  if (activeType) query = query.eq("type", activeType);
   if (searchQuery) query = query.ilike("title", `%${searchQuery}%`);
 
   const { data: items } = await query;
+
+  const linkStyle = (active: boolean) => ({
+    padding: "6px 16px",
+    fontSize: "11px",
+    letterSpacing: "0.08em",
+    textTransform: "uppercase" as const,
+    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+    color: active ? "var(--accent)" : "var(--muted)",
+    borderRadius: "100px",
+    textDecoration: "none",
+    transition: "all 0.2s",
+  });
 
   return (
     <main style={{ minHeight: "100vh", padding: "calc(56px + 3rem) 2rem 4rem", maxWidth: "1400px", margin: "0 auto" }}>
@@ -34,38 +48,25 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           Trending Now
         </h1>
 
-        {/* Search bar */}
+        {/* Search */}
         <form method="GET" style={{ marginBottom: "1.5rem" }}>
           <div style={{ position: "relative", maxWidth: "500px" }}>
-            <input
-              name="q"
-              defaultValue={searchQuery}
-              placeholder="Search repos..."
-              style={{
-                width: "100%",
-                padding: "10px 16px 10px 40px",
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: "8px",
-                color: "var(--text)",
-                fontSize: "13px",
-                outline: "none",
-                fontFamily: "var(--font-mono)",
-              }}
-            />
-            <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "var(--muted)", fontSize: "14px" }}>🔍</span>
+            <input name="q" defaultValue={searchQuery} placeholder="Search..." style={{ width: "100%", padding: "10px 16px 10px 40px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "8px", color: "var(--text)", fontSize: "13px", outline: "none", fontFamily: "var(--font-mono)" }} />
+            <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "var(--muted)" }}>🔍</span>
           </div>
         </form>
 
-        {/* Filter tags */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
-          <a href="/discover" style={{ padding: "6px 16px", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", border: `1px solid ${!activeTag ? "var(--accent)" : "var(--border)"}`, color: !activeTag ? "var(--accent)" : "var(--muted)", borderRadius: "100px", textDecoration: "none" }}>
-            All
-          </a>
+        {/* Type filter */}
+        <div style={{ display: "flex", gap: "8px", marginBottom: "1rem", flexWrap: "wrap" }}>
+          <a href="/discover" style={linkStyle(!activeType)}>All</a>
+          <a href="/discover?type=repo" style={linkStyle(activeType === "repo")}>🗂 Repos</a>
+          <a href="/discover?type=article" style={linkStyle(activeType === "article")}>📰 Articles</a>
+        </div>
+
+        {/* Tag filter */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
           {ALL_TAGS.map((tag) => (
-            <a key={tag} href={`/discover?tag=${tag}`} style={{ padding: "6px 16px", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", border: `1px solid ${activeTag === tag ? "var(--accent)" : "var(--border)"}`, color: activeTag === tag ? "var(--accent)" : "var(--muted)", borderRadius: "100px", textDecoration: "none" }}>
-              {tag}
-            </a>
+            <a key={tag} href={`/discover?tag=${tag}`} style={linkStyle(activeTag === tag)}>{tag}</a>
           ))}
         </div>
 
