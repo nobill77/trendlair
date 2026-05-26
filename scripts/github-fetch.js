@@ -8,34 +8,33 @@ const supabase = createClient(
 
 const TOPICS = ["ai", "machine-learning", "llm", "openai", "developer-tools"];
 
-async function fetchRepos(topic) {
-  const headers = { "User-Agent": "discovery-engine" };
-  if (process.env.GITHUB_TOKEN) {
-    headers["Authorization"] = `token ${process.env.GITHUB_TOKEN}`;
-  }
-  const res = await fetch(
-    `https://api.github.com/search/repositories?q=topic:${topic}&sort=stars&order=desc&per_page=20`,
-    { headers }
-  );
-  const data = await res.json();
-  return data.items || [];
-}
-
 function makeSlug(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-async function run() {
-  console.log("Starting fetch...");
+async function insertItem(item) {
+  const { data: existing } = await supabase
+    .from("items").select("id").eq("slug", item.slug).single();
+  if (existing) return;
+  await supabase.from("items").insert(item);
+  console.log(`Added: ${item.title}`);
+}
+
+// GitHub fetch
+async function fetchGitHub() {
+  console.log("Fetching GitHub...");
+  const headers = { "User-Agent": "discovery-engine" };
+  if (process.env.GITHUB_TOKEN) {
+    headers["Authorization"] = `token ${process.env.GITHUB_TOKEN}`;
+  }
   for (const topic of TOPICS) {
-    console.log(`Fetching: ${topic}`);
-    const repos = await fetchRepos(topic);
-    for (const repo of repos) {
-      const slug = makeSlug(repo.name);
-      const { data: existing } = await supabase
-        .from("items").select("id").eq("slug", slug).single();
-      if (existing) continue;
-      await supabase.from("items").insert({
+    const res = await fetch(
+      `https://api.github.com/search/repositories?q=topic:${topic}&sort=stars&order=desc&per_page=20`,
+      { headers }
+    );
+    const data = await res.json();
+    for (const repo of data.items || []) {
+      await insertItem({
         title: repo.full_name,
         description: repo.description || "No description.",
         type: "repo",
@@ -44,12 +43,42 @@ async function run() {
         tags: [topic, ...(repo.topics || [])].slice(0, 8),
         trend_score: repo.stargazers_count,
         stars: repo.stargazers_count,
-        slug: slug,
+        slug: makeSlug(repo.name),
       });
-      console.log(`Added: ${repo.name}`);
     }
     await new Promise((r) => setTimeout(r, 1000));
   }
+}
+
+// HackerNews fetch
+async function fetchHackerNews() {
+  console.log("Fetching HackerNews...");
+  const res = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json");
+  const ids = await res.json();
+  const top20 = ids.slice(0, 20);
+  for (const id of top20) {
+    const storyRes = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
+    const story = await storyRes.json();
+    if (!story || !story.url || story.type !== "story") continue;
+    const slug = makeSlug(`hn-${story.id}`);
+    await insertItem({
+      title: story.title,
+      description: `HackerNews · ${story.score} points · ${story.descendants || 0} comments`,
+      type: "article",
+      url: story.url,
+      github_url: null,
+      tags: ["hackernews", "trending"],
+      trend_score: story.score,
+      stars: story.score,
+      slug: slug,
+    });
+  }
+}
+
+async function run() {
+  console.log("Starting fetch...");
+  await fetchGitHub();
+  await fetchHackerNews();
   console.log("Done!");
 }
 
