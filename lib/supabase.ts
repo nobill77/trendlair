@@ -17,5 +17,9 @@ export type Item = {
   trend_score: number;
   slug: string;
   stars?: number;
+  votes?: number;
+  source?: string;
+  thumbnail?: string;
   created_at: string;
+};
 };
