@@ -46,7 +46,7 @@ async function fetchSubredditRSS(subreddit) {
     const scoreMatch = content.match(/(\d+) points/);
     const score = scoreMatch ? parseInt(scoreMatch[1]) : 0;
 
-    if (!title || score < 10) continue;
+    if (!title) continue;
 
     const postId = id.split('/').pop() || Date.now().toString();
     const cleanTitle = title.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
