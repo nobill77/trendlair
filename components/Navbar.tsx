@@ -39,12 +39,12 @@ export default function Navbar() {
             width: "28px", height: "28px", background: "var(--accent)",
             borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <span style={{ color: "#000", fontSize: "14px", fontWeight: 700 }}>D</span>
+            <span style={{ color: "#000", fontSize: "14px", fontWeight: 700 }}>T</span>
           </div>
           <span style={{
             fontFamily: "var(--font-display)", fontWeight: 800,
             fontSize: "16px", color: "var(--text)", letterSpacing: "-0.02em",
-          }}>Discovery Engine</span>
+          }}>Trendlair</span>
         </div>
       </Link>
 
