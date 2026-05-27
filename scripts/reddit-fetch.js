@@ -14,46 +14,70 @@ const SUBREDDITS = [
   'opensource',
 ];
 
-async function fetchSubreddit(subreddit) {
+async function fetchSubredditRSS(subreddit) {
   const res = await fetch(
-    `https://www.reddit.com/r/${subreddit}/top.json?limit=15&t=day`,
-    { headers: { 'User-Agent': 'Trendlair/1.0' } }
+    `https://www.reddit.com/r/${subreddit}/top.rss?t=day&limit=15`,
+    {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Trendlair/1.0)',
+        'Accept': 'application/rss+xml, application/xml, text/xml',
+      }
+    }
   );
 
   if (!res.ok) {
-    console.error(`Failed to fetch r/${subreddit}: ${res.status}`);
+    console.error(`Failed r/${subreddit}: ${res.status}`);
     return [];
   }
 
-  const json = await res.json();
-  const posts = json?.data?.children ?? [];
+  const xml = await res.text();
+  const items = [];
+  const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
+  let match;
 
-  return posts
-    .filter(({ data: p }) => !p.stickied && p.score > 10)
-    .map(({ data: p }) => ({
-      external_id: `reddit_${p.id}`,
-      slug: `reddit-${p.id}-${p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50)}`,
-      title: p.title,
-      description: `r/${subreddit} · ${p.score} upvotes · ${p.num_comments} comments`,
-      url: p.url.startsWith('http') ? p.url : `https://reddit.com${p.permalink}`,
+  while ((match = entryRegex.exec(xml)) !== null) {
+    const entry = match[1];
+    const id = (entry.match(/<id>(.*?)<\/id>/) || [])[1] || '';
+    const title = (entry.match(/<title[^>]*>(.*?)<\/title>/) || [])[1] || '';
+    const link = (entry.match(/<link[^>]*href="([^"]*)"/) || [])[1] || '';
+    const updated = (entry.match(/<updated>(.*?)<\/updated>/) || [])[1] || '';
+    const content = (entry.match(/<content[^>]*>([\s\S]*?)<\/content>/) || [])[1] || '';
+
+    const scoreMatch = content.match(/(\d+) points/);
+    const score = scoreMatch ? parseInt(scoreMatch[1]) : 0;
+
+    if (!title || score < 10) continue;
+
+    const postId = id.split('/').pop() || Date.now().toString();
+    const cleanTitle = title.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+
+    items.push({
+      external_id: `reddit_${postId}`,
+      slug: `reddit-${postId}-${cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50).replace(/-$/, '')}`,
+      title: cleanTitle,
+      description: `r/${subreddit} · ${score} upvotes`,
+      url: link || `https://reddit.com/r/${subreddit}`,
       source: 'reddit',
       type: 'article',
-      votes: p.score,
-      trend_score: p.score,
+      votes: score,
+      trend_score: score,
       thumbnail: null,
       tags: [subreddit.toLowerCase(), 'reddit'],
-      created_at: new Date(p.created_utc * 1000).toISOString(),
-    }));
+      created_at: updated || new Date().toISOString(),
+    });
+  }
+
+  return items;
 }
 
 async function fetchReddit() {
   let allPosts = [];
 
   for (const sub of SUBREDDITS) {
-    const posts = await fetchSubreddit(sub);
+    const posts = await fetchSubredditRSS(sub);
     allPosts = allPosts.concat(posts);
     console.log(`✅ r/${sub}: ${posts.length} posts`);
-    await new Promise(r => setTimeout(r, 1000)); // rate limit
+    await new Promise(r => setTimeout(r, 2000));
   }
 
   if (allPosts.length === 0) {
