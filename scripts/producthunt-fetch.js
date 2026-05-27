@@ -1,4 +1,4 @@
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -7,29 +7,24 @@ const supabase = createClient(
 
 const TOKEN = process.env.PRODUCT_HUNT_TOKEN;
 
-async function fetchProductHunt() {
-  const query = `
-    {
-      posts(first: 30, order: VOTES) {
-        edges {
-          node {
-            id
-            name
-            tagline
-            description
-            url
-            votesCount
-            createdAt
-            thumbnail { url }
-            topics {
-              edges { node { name } }
-            }
-          }
-        }
+const query = `{
+  posts(first: 30, order: VOTES) {
+    edges {
+      node {
+        id
+        name
+        tagline
+        url
+        votesCount
+        createdAt
+        thumbnail { url }
+        topics { edges { node { name } } }
       }
     }
-  `;
+  }
+}`;
 
+async function fetchProductHunt() {
   const res = await fetch('https://api.producthunt.com/v2/api/graphql', {
     method: 'POST',
     headers: {
@@ -43,7 +38,7 @@ async function fetchProductHunt() {
 
   if (!json.data) {
     console.error('Product Hunt API error:', JSON.stringify(json));
-    return;
+    process.exit(1);
   }
 
   const posts = json.data.posts.edges.map(({ node }) => ({
@@ -64,9 +59,10 @@ async function fetchProductHunt() {
 
   if (error) {
     console.error('Supabase error:', error.message);
-  } else {
-    console.log(`✅ Inserted/updated ${posts.length} Product Hunt items`);
+    process.exit(1);
   }
+
+  console.log(`✅ Inserted ${posts.length} Product Hunt items`);
 }
 
 fetchProductHunt();
