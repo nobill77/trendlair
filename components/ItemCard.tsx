@@ -5,14 +5,31 @@ import BookmarkButton from "./BookmarkButton";
 
 const CARD_COLORS = ["card-color-0","card-color-1","card-color-2","card-color-3","card-color-4"];
 
+const SOURCE_CONFIG: Record<string, { icon: string; label: string; color: string }> = {
+  github:       { icon: "⚫", label: "GitHub",       color: "#888" },
+  hackernews:   { icon: "🟠", label: "HackerNews",   color: "#ff6600" },
+  product_hunt: { icon: "🔴", label: "Product Hunt", color: "#da552f" },
+  reddit:       { icon: "🟤", label: "Reddit",       color: "#ff4500" },
+};
+
 export default function ItemCard({ item, index = 0 }: { item: Item; index?: number }) {
   const colorClass = CARD_COLORS[index % CARD_COLORS.length];
+  const source = SOURCE_CONFIG[item.source || "github"] || SOURCE_CONFIG["github"];
+
   return (
     <div className={`card-hover ${colorClass}`} style={{ border: "1px solid var(--border)", borderRadius: "12px", padding: "1.5rem", height: "100%", display: "flex", flexDirection: "column", gap: "12px", opacity: 0, animation: `fadeUp 0.5s ease ${index * 0.04}s forwards`, position: "relative", overflow: "hidden" }}>
+      
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--accent)", fontWeight: 700 }}>{item.type}</span>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {item.trend_score > 0 && <span style={{ fontSize: "11px", color: "var(--muted)" }}>⭐ {item.trend_score.toLocaleString()}</span>}
+          <span style={{ fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--accent)", fontWeight: 700 }}>{item.type}</span>
+          <span style={{ fontSize: "10px", padding: "2px 8px", borderRadius: "100px", border: `1px solid ${source.color}33`, color: source.color, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>
+            {source.icon} {source.label}
+          </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {item.trend_score > 0 && (
+            <span style={{ fontSize: "11px", color: "var(--muted)" }}>⭐ {item.trend_score.toLocaleString()}</span>
+          )}
           <BookmarkButton itemId={item.id} />
         </div>
       </div>
