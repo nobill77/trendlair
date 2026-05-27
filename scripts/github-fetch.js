@@ -6,7 +6,16 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-const TOPICS = ["ai", "machine-learning", "llm", "openai", "developer-tools"];
+const TOPICS = [
+  "ai",
+  "machine-learning",
+  "llm",
+  "openai",
+  "developer-tools",
+  "open-source",
+  "typescript",
+  "nextjs",
+];
 
 function makeSlug(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -26,7 +35,7 @@ async function fetchGitHub() {
   if (process.env.GITHUB_TOKEN) headers["Authorization"] = `token ${process.env.GITHUB_TOKEN}`;
 
   for (const topic of TOPICS) {
-    const res = await fetch(`https://api.github.com/search/repositories?q=topic:${topic}&sort=stars&order=desc&per_page=20`, { headers });
+    const res = await fetch(`https://api.github.com/search/repositories?q=topic:${topic}&sort=stars&order=desc&per_page=30`, { headers });
     const data = await res.json();
     for (const repo of data.items || []) {
       await insertItem({
