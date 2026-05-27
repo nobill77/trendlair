@@ -24,7 +24,7 @@ export default function HomePage() {
         </h1>
 
         <p style={{ fontSize: "15px", color: "var(--muted)", lineHeight: 1.7, marginBottom: "2.5rem", maxWidth: "480px" }}>
-          Discovery Engine curates the best AI repos, tools, and articles from GitHub and HackerNews — ranked by momentum and relevance.
+          Trendlair curates the best AI repos, tools, and articles from GitHub and HackerNews — ranked by momentum and relevance.
         </p>
 
         <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
@@ -49,7 +49,7 @@ export default function HomePage() {
       <div style={{ height: "1px", background: "var(--border)", margin: "0 2rem" }} />
 
       <section style={{ position: "relative", maxWidth: "1100px", margin: "0 auto", padding: "5rem 2rem", opacity: 0, animation: "fadeUp 0.8s 0.5s ease forwards" }}>
-        <p style={{ textAlign: "center", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "1rem" }}>Why Discovery Engine</p>
+        <p style={{ textAlign: "center", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "1rem" }}>Why Trendlair</p>
         <h2 style={{ textAlign: "center", fontFamily: "var(--font-display)", fontSize: "clamp(1.8rem, 4vw, 2.5rem)", fontWeight: 800, color: "var(--text)", marginBottom: "3rem", letterSpacing: "-0.02em" }}>
           Everything you need to stay ahead
         </h2>
