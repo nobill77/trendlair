@@ -43,6 +43,7 @@ async function fetchProductHunt() {
 
   const posts = json.data.posts.edges.map(({ node }) => ({
     external_id: `ph_${node.id}`,
+    slug: `ph-${node.id}-${node.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`,
     title: node.name,
     description: node.tagline,
     url: node.url,
