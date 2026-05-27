@@ -1,10 +1,17 @@
 import Link from "next/link";
 
 const features = [
-  { icon: "⚡", title: "Real-Time Updates", desc: "GitHub repos and HackerNews articles updated daily automatically" },
-  { icon: "🔖", title: "Save Bookmarks", desc: "Save your favorite repos and articles to revisit anytime" },
-  { icon: "🔍", title: "Smart Search", desc: "Filter by type, topic, or search for anything instantly" },
-  { icon: "📈", title: "Trend Score", desc: "Items ranked by stars, momentum and community engagement" },
+  { icon: "⚡", title: "Real-Time Updates", desc: "GitHub, Product Hunt, HackerNews & Reddit — updated daily automatically" },
+  { icon: "🔖", title: "Save Bookmarks", desc: "Save your favorite repos, tools and articles to revisit anytime" },
+  { icon: "🔍", title: "Smart Search", desc: "Filter by intent, topic, or search for anything instantly" },
+  { icon: "📈", title: "Trend Score", desc: "Items ranked by stars, votes, momentum and community engagement" },
+];
+
+const sources = [
+  { icon: "⚫", name: "GitHub", desc: "Top repos by stars & momentum" },
+  { icon: "🟠", name: "HackerNews", desc: "Best stories by points" },
+  { icon: "🔴", name: "Product Hunt", desc: "Top tools by votes" },
+  { icon: "🟤", name: "Reddit", desc: "Discussions from 6 subreddits" },
 ];
 
 export default function HomePage() {
@@ -24,7 +31,7 @@ export default function HomePage() {
         </h1>
 
         <p style={{ fontSize: "15px", color: "var(--muted)", lineHeight: 1.7, marginBottom: "2.5rem", maxWidth: "480px" }}>
-          Trendlair curates the best AI repos, tools, and articles from GitHub and HackerNews — ranked by momentum and relevance.
+          Trendlair curates the best AI repos, tools, and articles from GitHub, Product Hunt, HackerNews & Reddit — ranked by momentum and relevance.
         </p>
 
         <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
@@ -37,10 +44,31 @@ export default function HomePage() {
         </div>
 
         <div style={{ display: "flex", gap: "3rem", marginTop: "4rem", flexWrap: "wrap", justifyContent: "center", opacity: 0, animation: "fadeUp 0.8s 0.3s ease forwards" }}>
-          {[{ label: "Items Tracked", value: "110+" }, { label: "Updated", value: "Daily" }, { label: "Topics", value: "AI · LLM · Dev" }, { label: "Free", value: "100%" }].map(({ label, value }) => (
+          {[{ label: "Items Tracked", value: "200+" }, { label: "Sources", value: "4" }, { label: "Updated", value: "Daily" }, { label: "Free", value: "100%" }].map(({ label, value }) => (
             <div key={label} style={{ textAlign: "center" }}>
               <div style={{ fontSize: "20px", fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--text)" }}>{value}</div>
               <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div style={{ height: "1px", background: "var(--border)", margin: "0 2rem" }} />
+
+      {/* Sources Section */}
+      <section style={{ position: "relative", maxWidth: "1100px", margin: "0 auto", padding: "4rem 2rem", opacity: 0, animation: "fadeUp 0.8s 0.4s ease forwards" }}>
+        <p style={{ textAlign: "center", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "1rem" }}>Data Sources</p>
+        <h2 style={{ textAlign: "center", fontFamily: "var(--font-display)", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, color: "var(--text)", marginBottom: "2rem", letterSpacing: "-0.02em" }}>
+          Curated from 4 sources
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+          {sources.map(({ icon, name, desc }) => (
+            <div key={name} style={{ border: "1px solid var(--border)", borderRadius: "12px", padding: "1.25rem 1.5rem", background: "var(--surface)", display: "flex", alignItems: "center", gap: "1rem" }}>
+              <span style={{ fontSize: "24px" }}>{icon}</span>
+              <div>
+                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text)", marginBottom: "2px" }}>{name}</div>
+                <div style={{ fontSize: "12px", color: "var(--muted)" }}>{desc}</div>
+              </div>
             </div>
           ))}
         </div>
