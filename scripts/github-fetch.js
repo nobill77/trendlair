@@ -24,6 +24,7 @@ async function fetchGitHub() {
   console.log("Fetching GitHub...");
   const headers = { "User-Agent": "trendlair" };
   if (process.env.GITHUB_TOKEN) headers["Authorization"] = `token ${process.env.GITHUB_TOKEN}`;
+
   for (const topic of TOPICS) {
     const res = await fetch(`https://api.github.com/search/repositories?q=topic:${topic}&sort=stars&order=desc&per_page=20`, { headers });
     const data = await res.json();
@@ -32,6 +33,7 @@ async function fetchGitHub() {
         title: repo.full_name,
         description: repo.description || "No description.",
         type: "repo",
+        source: "github",
         url: repo.html_url,
         github_url: repo.html_url,
         tags: [topic, ...(repo.topics || [])].slice(0, 8),
@@ -46,7 +48,7 @@ async function fetchGitHub() {
 
 async function fetchHackerNews() {
   console.log("Fetching HackerNews...");
-  await supabase.from("items").delete().eq("type", "article");
+  await supabase.from("items").delete().eq("type", "article").eq("source", "hackernews");
   const res = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json");
   const ids = await res.json();
   for (const id of ids.slice(0, 30)) {
@@ -57,6 +59,7 @@ async function fetchHackerNews() {
       title: story.title,
       description: `HackerNews · ${story.score} points · ${story.descendants || 0} comments`,
       type: "article",
+      source: "hackernews",
       url: story.url,
       github_url: null,
       tags: ["hackernews", "trending"],
@@ -71,7 +74,7 @@ async function fetchHackerNews() {
 async function fetchProductHunt() {
   console.log("Fetching Product Hunt...");
   if (!process.env.PRODUCT_HUNT_TOKEN) { console.log("No PH token"); return; }
-  await supabase.from("items").delete().eq("type", "tool");
+  await supabase.from("items").delete().eq("type", "tool").eq("source", "product_hunt");
   const query = `{ posts(first: 20, order: VOTES) { edges { node { id name tagline url votesCount topics { edges { node { name } } } } } } }`;
   const res = await fetch("https://api.producthunt.com/v2/api/graphql", {
     method: "POST",
@@ -86,6 +89,7 @@ async function fetchProductHunt() {
       title: post.name,
       description: post.tagline,
       type: "tool",
+      source: "product_hunt",
       url: post.url,
       github_url: null,
       tags: ["producthunt", ...tags].slice(0, 8),
