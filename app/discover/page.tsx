@@ -3,21 +3,20 @@ import type { Item } from "@/lib/supabase";
 import ItemCard from "@/components/ItemCard";
 
 interface DiscoverPageProps {
-  searchParams: Promise<{ tag?: string; type?: string; q?: string }>;
+  searchParams: Promise<{ tag?: string; type?: string; q?: string; sort?: string }>;
 }
-
-const ALL_TAGS = ["ai", "machine-learning", "llm", "developer-tools", "openai"];
 
 export default async function DiscoverPage({ searchParams }: DiscoverPageProps) {
   const params = await searchParams;
   const activeTag = params.tag;
   const activeType = params.type;
   const searchQuery = params.q;
+  const sortOrder = params.sort;
 
   let query = supabase
     .from("items")
     .select("*")
-    .order("trend_score", { ascending: false })
+    .order(sortOrder === "new" ? "created_at" : "trend_score", { ascending: false })
     .limit(60);
 
   if (activeTag) query = query.contains("tags", [activeTag]);
@@ -38,6 +37,8 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     transition: "all 0.2s",
   });
 
+  const isDefault = !activeType && !activeTag && !sortOrder && !searchQuery;
+
   return (
     <main style={{ minHeight: "100vh", padding: "calc(56px + 3rem) 2rem 4rem", maxWidth: "1400px", margin: "0 auto" }}>
       <div style={{ marginBottom: "3rem", borderBottom: "1px solid var(--border)", paddingBottom: "2rem" }}>
@@ -51,28 +52,28 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         {/* Search */}
         <form method="GET" style={{ marginBottom: "1.5rem" }}>
           <div style={{ position: "relative", maxWidth: "500px" }}>
-            <input name="q" defaultValue={searchQuery} placeholder="Search..." style={{ width: "100%", padding: "10px 16px 10px 40px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "8px", color: "var(--text)", fontSize: "13px", outline: "none", fontFamily: "var(--font-mono)" }} />
+            <input
+              name="q"
+              defaultValue={searchQuery}
+              placeholder="Search..."
+              style={{ width: "100%", padding: "10px 16px 10px 40px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "8px", color: "var(--text)", fontSize: "13px", outline: "none", fontFamily: "var(--font-mono)" }}
+            />
             <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "var(--muted)" }}>🔍</span>
           </div>
         </form>
 
-        {/* Type filter */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "1rem", flexWrap: "wrap" }}>
-          <a href="/discover" style={linkStyle(!activeType)}>All</a>
-          <a href="/discover?type=repo" style={linkStyle(activeType === "repo")}>🗂 Repos</a>
-          <a href="/discover?type=article" style={linkStyle(activeType === "article")}>📰 Articles</a>
+        {/* Intent Navigation */}
+        <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+          <a href="/discover" style={linkStyle(isDefault)}>🔥 Trending</a>
+          <a href="/discover?sort=new" style={linkStyle(sortOrder === "new")}>✨ New</a>
+          <a href="/discover?tag=ai" style={linkStyle(activeTag === "ai")}>🤖 AI</a>
           <a href="/discover?type=tool" style={linkStyle(activeType === "tool")}>🚀 Tools</a>
-        </div>
-
-        {/* Tag filter */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-          {ALL_TAGS.map((tag) => (
-            <a key={tag} href={`/discover?tag=${tag}`} style={linkStyle(activeTag === tag)}>{tag}</a>
-          ))}
+          <a href="/discover?type=repo" style={linkStyle(activeType === "repo")}>📖 Open Source</a>
+          <a href="/discover?type=article" style={linkStyle(activeType === "article")}>📰 Articles</a>
         </div>
 
         <p style={{ fontSize: "13px", color: "var(--muted)", marginTop: "1rem" }}>
-          {items?.length ?? 0} items · Sorted by stars & momentum
+          {items?.length ?? 0} items · {sortOrder === "new" ? "Sorted by date" : "Sorted by stars & momentum"}
         </p>
       </div>
 
