@@ -61,6 +61,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           <a href="/discover" style={linkStyle(!activeType)}>All</a>
           <a href="/discover?type=repo" style={linkStyle(activeType === "repo")}>🗂 Repos</a>
           <a href="/discover?type=article" style={linkStyle(activeType === "article")}>📰 Articles</a>
+          <a href="/discover?type=tool" style={linkStyle(activeType === "tool")}>🚀 Tools</a>
         </div>
 
         {/* Tag filter */}
