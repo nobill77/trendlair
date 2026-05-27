@@ -49,6 +49,7 @@ async function fetchProductHunt() {
     url: node.url,
     source: 'product_hunt',
     votes: node.votesCount,
+    trend_score: node.votesCount,
     thumbnail: node.thumbnail?.url || null,
     tags: node.topics.edges.map(e => e.node.name),
     created_at: node.createdAt,
