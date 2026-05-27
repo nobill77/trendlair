@@ -27,7 +27,6 @@ async function insertItem(item) {
     .upsert(item, { onConflict: "external_id" });
   console.log(`Upserted: ${item.title}`);
 }
-}
 
 async function fetchGitHub() {
   console.log("Fetching GitHub...");
@@ -39,6 +38,7 @@ async function fetchGitHub() {
     const data = await res.json();
     for (const repo of data.items || []) {
       await insertItem({
+        external_id: `gh_${repo.id}`,
         title: repo.full_name,
         description: repo.description || "No description.",
         type: "repo",
@@ -65,6 +65,7 @@ async function fetchHackerNews() {
     const story = await storyRes.json();
     if (!story || !story.url || story.type !== "story") continue;
     await supabase.from("items").insert({
+      external_id: `hn_${story.id}`,
       title: story.title,
       description: `HackerNews · ${story.score} points · ${story.descendants || 0} comments`,
       type: "article",
@@ -95,9 +96,9 @@ async function fetchProductHunt() {
     const post = edge.node;
     const tags = post.topics?.edges?.map(e => e.node.name.toLowerCase()) || [];
     await insertItem({
-      await insertItem({
-        external_id: `gh_${repo.id}`,
-        title: repo.full_name,
+      external_id: `ph_${post.id}`,
+      title: post.name,
+      description: post.tagline,
       type: "tool",
       source: "product_hunt",
       url: post.url,
@@ -107,7 +108,6 @@ async function fetchProductHunt() {
       stars: post.votesCount,
       slug: makeSlug(`ph-${post.id}`),
     });
-    console.log(`Added tool: ${post.name}`);
   }
 }
 
