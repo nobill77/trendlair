@@ -22,11 +22,11 @@ function makeSlug(name) {
 }
 
 async function insertItem(item) {
-  const { data: existing } = await supabase
-    .from("items").select("id").eq("slug", item.slug).single();
-  if (existing) return;
-  await supabase.from("items").insert(item);
-  console.log(`Added: ${item.title}`);
+  await supabase
+    .from("items")
+    .upsert(item, { onConflict: "external_id" });
+  console.log(`Upserted: ${item.title}`);
+}
 }
 
 async function fetchGitHub() {
@@ -95,8 +95,9 @@ async function fetchProductHunt() {
     const post = edge.node;
     const tags = post.topics?.edges?.map(e => e.node.name.toLowerCase()) || [];
     await insertItem({
-      title: post.name,
-      description: post.tagline,
+      await insertItem({
+        external_id: `gh_${repo.id}`,
+        title: repo.full_name,
       type: "tool",
       source: "product_hunt",
       url: post.url,
