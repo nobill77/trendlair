@@ -22,4 +22,3 @@ export type Item = {
   thumbnail?: string;
   created_at: string;
 };
-};
