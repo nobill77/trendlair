@@ -17,7 +17,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     .from("items")
     .select("*")
     .order(sortOrder === "new" ? "created_at" : "trend_score", { ascending: false })
-    .limit(60);
+    .limit(150);
 
   if (activeTag) query = query.contains("tags", [activeTag]);
   if (activeType) query = query.eq("type", activeType);
