@@ -13,7 +13,6 @@ const CARD_COLORS = [
 
 export default function ItemCard({ item, index = 0 }: { item: Item; index?: number }) {
   const colorClass = CARD_COLORS[index % CARD_COLORS.length];
-
   return (
     <div
       className={`card-hover ${colorClass}`}
@@ -31,7 +30,6 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
         overflow: "hidden",
       }}
     >
-      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{
           fontSize: "10px",
@@ -52,7 +50,6 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
         </div>
       </div>
 
-      {/* Title — opens source directly */}
       
         href={item.url || "#"}
         target="_blank"
@@ -71,7 +68,6 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
         </h2>
       </a>
 
-      {/* Description */}
       <p style={{
         fontSize: "12px",
         color: "var(--muted)",
@@ -85,7 +81,6 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
         {item.description || "No description available."}
       </p>
 
-      {/* Tags */}
       {item.tags && item.tags.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -93,7 +88,6 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
               <TagBadge key={tag} tag={tag} />
             ))}
           </div>
-          {/* Details link */}
           <Link
             href={`/item/${item.slug}`}
             style={{
