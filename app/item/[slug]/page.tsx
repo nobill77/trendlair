@@ -3,6 +3,7 @@ import type { Item } from "@/lib/supabase";
 import ItemCard from "@/components/ItemCard";
 import TagBadge from "@/components/TagBadge";
 import BackButton from "@/components/BackButton";
+import CopyLinkButton from "@/components/CopyLinkButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -201,6 +202,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
             </a>
           )}
           <BackButton />
+          <CopyLinkButton />
         </div>
       </div>
 

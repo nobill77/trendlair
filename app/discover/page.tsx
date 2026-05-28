@@ -100,9 +100,20 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           <Link href="/discover?source=reddit" style={linkStyle(params.source === "reddit")}>🟤 Reddit</Link>
         </div>
 
-        <p style={{ fontSize: "13px", color: "var(--muted)", marginTop: "1rem" }}>
-          {items?.length ?? 0} items · {sortOrder === "new" ? "Sorted by date" : "Sorted by stars & momentum"}
-        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem", flexWrap: "wrap" }}>
+          <p style={{ fontSize: "13px", color: "var(--muted)" }}>
+            {items?.length ?? 0} items · {sortOrder === "new" ? "Sorted by date" : "Sorted by stars & momentum"}
+          </p>
+          {!isDefault && (
+            <Link href="/discover" style={{
+              fontSize: "11px", color: "var(--accent)", textDecoration: "none",
+              border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px",
+              padding: "3px 10px", letterSpacing: "0.05em",
+            }}>
+              ✕ Clear filters
+            </Link>
+          )}
+        </div>
       </div>
 
       {isDefault && (
@@ -119,7 +130,20 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         <div style={{ textAlign: "center", padding: "6rem 2rem", border: "1px dashed var(--border)", borderRadius: "16px" }}>
           <div style={{ fontSize: "48px", marginBottom: "1rem" }}>🔍</div>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: "24px", fontWeight: 700, color: "var(--text)", marginBottom: "0.75rem" }}>No results found</h2>
-          <a href="/discover" style={{ color: "var(--accent)", textDecoration: "none", fontSize: "13px" }}>Clear search →</a>
+          <p style={{ fontSize: "13px", color: "var(--muted)", marginBottom: "1.5rem" }}>
+            Try a different search or browse by category
+          </p>
+          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/discover" style={{ fontSize: "12px", color: "var(--accent)", textDecoration: "none", border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px", padding: "5px 14px" }}>
+              🔥 Trending
+            </Link>
+            <Link href="/discover?tag=ai" style={{ fontSize: "12px", color: "var(--muted)", textDecoration: "none", border: "1px solid var(--border)", borderRadius: "100px", padding: "5px 14px" }}>
+              🤖 AI
+            </Link>
+            <Link href="/discover?type=tool" style={{ fontSize: "12px", color: "var(--muted)", textDecoration: "none", border: "1px solid var(--border)", borderRadius: "100px", padding: "5px 14px" }}>
+              🚀 Tools
+            </Link>
+          </div>
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.25rem" }}>

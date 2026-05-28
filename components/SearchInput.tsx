@@ -25,6 +25,13 @@ export default function SearchInput() {
     }, 300);
   };
 
+  const clear = () => {
+    setValue("");
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("q");
+    router.push(`/discover?${params.toString()}`);
+  };
+
   return (
     <div style={{ position: "relative", maxWidth: "500px" }}>
       <input
@@ -35,7 +42,7 @@ export default function SearchInput() {
         placeholder="Search titles, descriptions, tags..."
         style={{
           width: "100%",
-          padding: "10px 16px 10px 40px",
+          padding: `10px ${value ? "36px" : "16px"} 10px 40px`,
           background: "var(--surface)",
           border: `1px solid ${focused ? "var(--accent)" : "var(--border)"}`,
           borderRadius: "8px",
@@ -50,6 +57,22 @@ export default function SearchInput() {
       <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: focused ? "var(--accent)" : "var(--muted)", transition: "color 0.2s ease" }}>
         🔍
       </span>
+      {value && (
+        <button
+          onClick={clear}
+          aria-label="Clear search"
+          style={{
+            position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)",
+            background: "none", border: "none", color: "var(--muted)", cursor: "pointer",
+            fontSize: "14px", padding: "2px", lineHeight: 1,
+            transition: "color 0.2s",
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--muted)")}
+        >
+          ✕
+        </button>
+      )}
     </div>
   );
 }

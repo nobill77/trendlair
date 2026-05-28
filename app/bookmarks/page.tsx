@@ -32,7 +32,7 @@ export default function BookmarksPage() {
       return;
     }
 
-    const itemIds = bookmarkData.map((b: any) => b.item_id);
+    const itemIds = bookmarkData.map((b: { item_id: string }) => b.item_id);
     const { data: itemsData } = await supabase
       .from("items").select("*").in("id", itemIds);
 
