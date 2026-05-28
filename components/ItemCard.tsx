@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useState } from "react";
 import type { Item } from "@/lib/supabase";
 import TagBadge from "./TagBadge";
 import BookmarkButton from "./BookmarkButton";
@@ -15,9 +16,29 @@ const SOURCE_CONFIG: Record<string, { icon: string; label: string; color: string
 export default function ItemCard({ item, index = 0 }: { item: Item; index?: number }) {
   const colorClass = CARD_COLORS[index % CARD_COLORS.length];
   const source = SOURCE_CONFIG[item.source || "github"] || SOURCE_CONFIG["github"];
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <div className={`card-hover ${colorClass}`} style={{ border: "1px solid var(--border)", borderRadius: "12px", padding: "1.5rem", height: "100%", display: "flex", flexDirection: "column", gap: "12px", opacity: 0, animation: `fadeUp 0.5s ease ${index * 0.04}s forwards`, position: "relative", overflow: "hidden" }}>
+    <div
+      className={`${colorClass}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        border: hovered ? "1px solid rgba(255,255,255,0.25)" : "1px solid var(--border)",
+        borderRadius: "12px",
+        padding: "1.5rem",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: "12px",
+        opacity: 0,
+        animation: `fadeUp 0.5s ease ${index * 0.04}s forwards`,
+        position: "relative",
+        overflow: "hidden",
+        transition: "border-color 300ms ease, box-shadow 300ms ease",
+        boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.3)" : "none",
+      }}
+    >
       
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
