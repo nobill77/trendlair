@@ -42,7 +42,7 @@ export default function ScrollSection({ title, items }: { title: string; items: 
       </div>
       <div
         ref={ref}
-        style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "4px", scrollbarWidth: "none" }}
+        style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "4px", paddingRight: "16px", scrollbarWidth: "none" }}
       >
         {items.map((item: Item, i: number) => (
           <div key={item.id} style={{ minWidth: "285px", maxWidth: "285px", flexShrink: 0 }}>
