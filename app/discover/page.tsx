@@ -28,11 +28,15 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
   const { data: items } = await query;
 
+  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
   const [
+    { data: trendingHour },
     { data: trending },
     { data: justLaunched },
     { data: hiddenGems },
   ] = await Promise.all([
+    supabase.from("items").select("*").gte("updated_at", since24h).order("trend_score", { ascending: false }).limit(10),
     supabase.from("items").select("*").order("trend_score", { ascending: false }).limit(5),
     supabase.from("items").select("*").order("created_at", { ascending: false }).limit(5),
     supabase.from("items").select("*").gt("stars", 1000).lt("trend_score", 50).limit(5),
@@ -93,9 +97,10 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
       {isDefault && (
         <div style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
-          <ScrollSection title="🔥 Trending Now"  items={trending      ?? []} />
-          <ScrollSection title="✨ Just Launched" items={justLaunched  ?? []} />
-          <ScrollSection title="💎 Hidden Gems"   items={hiddenGems    ?? []} />
+          <ScrollSection title="⚡ Trending This Hour" items={trendingHour ?? []} updatedAt={trendingHour?.[0]?.updated_at} />
+          <ScrollSection title="🔥 Trending Now"       items={trending      ?? []} />
+          <ScrollSection title="✨ Just Launched"      items={justLaunched  ?? []} />
+          <ScrollSection title="💎 Hidden Gems"        items={hiddenGems    ?? []} />
           <div style={{ height: "1px", background: "var(--border)" }} />
         </div>
       )}

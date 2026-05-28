@@ -1,8 +1,26 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { Item } from "@/lib/supabase";
 import ItemCard from "./ItemCard";
+
+function LiveTimestamp({ updatedAt }: { updatedAt: string }) {
+  const [label, setLabel] = useState("");
+
+  useEffect(() => {
+    const update = () => {
+      const diff = Math.floor((Date.now() - new Date(updatedAt).getTime()) / 60000);
+      setLabel(diff <= 0 ? "Updated just now" : `Updated ${diff} minute${diff === 1 ? "" : "s"} ago`);
+    };
+    update();
+    const id = setInterval(update, 60000);
+    return () => clearInterval(id);
+  }, [updatedAt]);
+
+  return (
+    <span style={{ fontSize: "11px", color: "var(--muted)", letterSpacing: "0.05em" }}>{label}</span>
+  );
+}
 
 const btnStyle: React.CSSProperties = {
   width: "36px",
@@ -20,7 +38,7 @@ const btnStyle: React.CSSProperties = {
   transition: "background 200ms ease",
 };
 
-export default function ScrollSection({ title, items }: { title: string; items: Item[] }) {
+export default function ScrollSection({ title, items, updatedAt }: { title: string; items: Item[]; updatedAt?: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   const scroll = (dir: "left" | "right") => {
@@ -32,9 +50,12 @@ export default function ScrollSection({ title, items }: { title: string; items: 
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-        <h2 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 700, color: "var(--text)", letterSpacing: "-0.02em" }}>
-          {title}
-        </h2>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 700, color: "var(--text)", letterSpacing: "-0.02em" }}>
+            {title}
+          </h2>
+          {updatedAt && <LiveTimestamp updatedAt={updatedAt} />}
+        </div>
         <div style={{ display: "flex", gap: "8px" }}>
           <button onClick={() => scroll("left")}  style={btnStyle} aria-label="Scroll left">←</button>
           <button onClick={() => scroll("right")} style={btnStyle} aria-label="Scroll right">→</button>
