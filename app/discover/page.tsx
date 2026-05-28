@@ -34,16 +34,22 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
+  const { data: trending } = await supabase
+    .from("items").select("*").order("trend_score", { ascending: false }).limit(5);
+
+  const trendingIds = (trending ?? []).map((item) => item.id);
+
   const [
     { data: trendingHour },
-    { data: trending },
     { data: justLaunched },
     { data: hiddenGems },
   ] = await Promise.all([
     supabase.from("items").select("*").gte("updated_at", since24h).order("trend_score", { ascending: false }).limit(10),
-    supabase.from("items").select("*").order("trend_score", { ascending: false }).limit(5),
     supabase.from("items").select("*").order("created_at", { ascending: false }).limit(5),
-    supabase.from("items").select("*").gt("stars", 1000).lt("trend_score", 50).limit(5),
+    supabase.from("items").select("*").gt("stars", 10000)
+      .not("id", "in", `(${trendingIds.join(",")})`)
+      .order("stars", { ascending: false })
+      .limit(5),
   ]);
 
   const linkStyle = (active: boolean) => ({
