@@ -6,7 +6,7 @@ import BookmarkButton from "./BookmarkButton";
 const CARD_COLORS = ["card-color-0","card-color-1","card-color-2","card-color-3","card-color-4"];
 
 const SOURCE_CONFIG: Record<string, { icon: string; label: string; color: string }> = {
-  github:       { icon: "⚫", label: "GitHub",       color: "#888" },
+  github:       { icon: "⚫", label: "GitHub",       color: "#e6edf3" },
   hackernews:   { icon: "🟠", label: "HackerNews",   color: "#ff6600" },
   product_hunt: { icon: "🔴", label: "Product Hunt", color: "#da552f" },
   reddit:       { icon: "🟤", label: "Reddit",       color: "#ff4500" },
