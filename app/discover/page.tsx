@@ -37,8 +37,6 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
   const { data: trending } = await supabase
     .from("items").select("*").order("trend_score", { ascending: false }).limit(5);
 
-  const trendingIds = (trending ?? []).map((item) => item.id);
-
   const [
     { data: trendingHour },
     { data: justLaunched },
@@ -46,8 +44,8 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
   ] = await Promise.all([
     supabase.from("items").select("*").gte("updated_at", since24h).order("trend_score", { ascending: false }).limit(10),
     supabase.from("items").select("*").order("created_at", { ascending: false }).limit(5),
-    supabase.from("items").select("*").gt("stars", 10000)
-      .not("id", "in", `(${trendingIds.join(",")})`)
+    supabase.from("items").select("*").gt("stars", 500)
+      .neq("source", "github")
       .order("stars", { ascending: false })
       .limit(5),
   ]);
