@@ -102,12 +102,18 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
                 <h2 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", letterSpacing: "-0.02em" }}>
                   {title}
                 </h2>
-                <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "0.75rem", scrollbarWidth: "thin" }}>
-                  {sectionItems.map((item: Item, i: number) => (
-                    <div key={item.id} style={{ minWidth: "300px", maxWidth: "300px", flexShrink: 0 }}>
-                      <ItemCard item={item} index={i} />
+                <div style={{ position: "relative" }}>
+                  <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "0.75rem", scrollbarWidth: "none", marginLeft: "-12px", paddingLeft: "12px" }}>
+                    {sectionItems.map((item: Item, i: number) => (
+                      <div key={item.id} style={{ minWidth: "285px", maxWidth: "285px", flexShrink: 0 }}>
+                        <ItemCard item={item} index={i} />
+                      </div>
+                    ))}
+                    <div style={{ minWidth: "72px", maxWidth: "72px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed rgba(200,255,0,0.3)", borderRadius: "12px", background: "rgba(200,255,0,0.03)", color: "#c8ff00", fontSize: "26px" }}>
+                      →
                     </div>
-                  ))}
+                  </div>
+                  <div style={{ position: "absolute", left: 0, top: 0, bottom: "0.75rem", width: "32px", background: "linear-gradient(to right, var(--bg), transparent)", pointerEvents: "none" }} />
                 </div>
               </div>
             ) : null
