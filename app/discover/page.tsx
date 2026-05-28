@@ -27,6 +27,16 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
   const { data: items } = await query;
 
+  const [
+    { data: trending },
+    { data: justLaunched },
+    { data: hiddenGems },
+  ] = await Promise.all([
+    supabase.from("items").select("*").order("trend_score", { ascending: false }).limit(5),
+    supabase.from("items").select("*").order("created_at", { ascending: false }).limit(5),
+    supabase.from("items").select("*").gt("stars", 1000).lt("trend_score", 50).limit(5),
+  ]);
+
   const linkStyle = (active: boolean) => ({
     padding: "6px 16px",
     fontSize: "11px",
@@ -79,6 +89,32 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           {items?.length ?? 0} items · {sortOrder === "new" ? "Sorted by date" : "Sorted by stars & momentum"}
         </p>
       </div>
+
+      {isDefault && (
+        <div style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+          {[
+            { title: "🔥 Trending Now",  items: trending },
+            { title: "✨ Just Launched", items: justLaunched },
+            { title: "💎 Hidden Gems",   items: hiddenGems },
+          ].map(({ title, items: sectionItems }) =>
+            sectionItems && sectionItems.length > 0 ? (
+              <div key={title}>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", letterSpacing: "-0.02em" }}>
+                  {title}
+                </h2>
+                <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "0.75rem", scrollbarWidth: "thin" }}>
+                  {sectionItems.map((item: Item, i: number) => (
+                    <div key={item.id} style={{ minWidth: "300px", maxWidth: "300px", flexShrink: 0 }}>
+                      <ItemCard item={item} index={i} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null
+          )}
+          <div style={{ height: "1px", background: "var(--border)" }} />
+        </div>
+      )}
 
       {!items || items.length === 0 ? (
         <div style={{ textAlign: "center", padding: "6rem 2rem", border: "1px dashed var(--border)", borderRadius: "16px" }}>
