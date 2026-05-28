@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import type { Item } from "@/lib/supabase";
 import ItemCard from "@/components/ItemCard";
+import ScrollSection from "@/components/ScrollSection";
 
 interface DiscoverPageProps {
   searchParams: Promise<{ tag?: string; type?: string; q?: string; sort?: string; source?: string }>;
@@ -92,32 +93,9 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
       {isDefault && (
         <div style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
-          {[
-            { title: "🔥 Trending Now",  items: trending },
-            { title: "✨ Just Launched", items: justLaunched },
-            { title: "💎 Hidden Gems",   items: hiddenGems },
-          ].map(({ title, items: sectionItems }) =>
-            sectionItems && sectionItems.length > 0 ? (
-              <div key={title}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", letterSpacing: "-0.02em" }}>
-                  {title}
-                </h2>
-                <div style={{ position: "relative" }}>
-                  <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "0.75rem", scrollbarWidth: "none", marginLeft: "-12px", paddingLeft: "12px" }}>
-                    {sectionItems.map((item: Item, i: number) => (
-                      <div key={item.id} style={{ minWidth: "285px", maxWidth: "285px", flexShrink: 0 }}>
-                        <ItemCard item={item} index={i} />
-                      </div>
-                    ))}
-                    <div style={{ minWidth: "72px", maxWidth: "72px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed rgba(200,255,0,0.3)", borderRadius: "12px", background: "rgba(200,255,0,0.03)", color: "#c8ff00", fontSize: "26px" }}>
-                      →
-                    </div>
-                  </div>
-                  <div style={{ position: "absolute", left: 0, top: 0, bottom: "0.75rem", width: "32px", background: "linear-gradient(to right, var(--bg), transparent)", pointerEvents: "none" }} />
-                </div>
-              </div>
-            ) : null
-          )}
+          <ScrollSection title="🔥 Trending Now"  items={trending      ?? []} />
+          <ScrollSection title="✨ Just Launched" items={justLaunched  ?? []} />
+          <ScrollSection title="💎 Hidden Gems"   items={hiddenGems    ?? []} />
           <div style={{ height: "1px", background: "var(--border)" }} />
         </div>
       )}
