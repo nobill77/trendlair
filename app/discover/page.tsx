@@ -97,7 +97,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
       {isDefault && (
         <div style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
-          <ScrollSection title="⚡ Trending This Hour" items={trendingHour ?? []} updatedAt={trendingHour?.[0]?.updated_at} />
+          <ScrollSection title="⚡ Hot Right Now" items={trendingHour ?? []} />
           <ScrollSection title="🔥 Trending Now"       items={trending      ?? []} />
           <ScrollSection title="✨ Just Launched"      items={justLaunched  ?? []} />
           <ScrollSection title="💎 Hidden Gems"        items={hiddenGems    ?? []} />
