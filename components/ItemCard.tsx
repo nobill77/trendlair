@@ -26,7 +26,7 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        border: hovered ? "2px solid rgba(255,255,255,0.8)" : "2px solid #2a3040",
+        border: "1px solid #2a3040",
         borderRadius: "12px",
         padding: "1.5rem",
         height: "100%",
@@ -39,7 +39,7 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
         overflow: "hidden",
         background: "linear-gradient(135deg, #141820 0%, #0f1117 60%, #111418 100%)",
         transition: "border-color 300ms ease, box-shadow 300ms ease",
-        boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.3)" : "none",
+        boxShadow: hovered ? "0 0 0 2px #c8ff00, 0 8px 32px rgba(200,255,0,0.15)" : "none",
       }}
     >
       
