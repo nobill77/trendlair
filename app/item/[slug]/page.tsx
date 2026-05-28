@@ -193,7 +193,10 @@ export default async function ItemPage({ params }: ItemPageProps) {
                 textTransform: "uppercase",
               }}
             >
-              {item.type === "article" ? "View on HackerNews →" : "View on GitHub →"}
+              {item.source === "hackernews" ? "View on HackerNews →"
+              : item.source === "product_hunt" ? "View on Product Hunt →"
+              : item.source === "reddit" ? "View on Reddit →"
+              : "View on GitHub →"}
             </a>
           )}
           <Link
