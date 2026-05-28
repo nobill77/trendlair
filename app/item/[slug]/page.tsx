@@ -21,13 +21,17 @@ export default async function ItemPage({ params }: ItemPageProps) {
 
   if (!item) notFound();
 
-  // Get related items: same tags, exclude self
+  // Get related items: same tags OR same source, exclude self
+  const tagFilter = item.tags?.length > 0 ? `tags.cs.{${item.tags[0]}}` : null;
+  const sourceFilter = item.source ? `source.eq.${item.source}` : null;
+  const orFilter = [tagFilter, sourceFilter].filter(Boolean).join(",");
+
   let relatedItems: Item[] = [];
-  if (item.tags && item.tags.length > 0) {
+  if (orFilter) {
     const { data: related } = await supabase
       .from("items")
       .select("*")
-      .contains("tags", [item.tags[0]])
+      .or(orFilter)
       .neq("id", item.id)
       .order("trend_score", { ascending: false })
       .limit(3);
