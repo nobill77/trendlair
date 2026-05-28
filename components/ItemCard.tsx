@@ -58,9 +58,15 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
         </div>
       </div>
 
-      <Link href={item.url || "#"} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-        <h2 style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: 700, color: "var(--text)", lineHeight: 1.3, cursor: "pointer" }}>{item.title} ↗</h2>
-      </Link>
+      {item.url ? (
+        <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: 700, color: "var(--text)", lineHeight: 1.3, cursor: "pointer" }}>{item.title} ↗</h2>
+        </a>
+      ) : (
+        <Link href={`/item/${item.slug}`} style={{ textDecoration: "none" }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: 700, color: "var(--text)", lineHeight: 1.3, cursor: "pointer" }}>{item.title}</h2>
+        </Link>
+      )}
 
       <p style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.6, flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
         {item.description || "No description available."}
