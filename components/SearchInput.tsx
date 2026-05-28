@@ -7,7 +7,7 @@ export default function SearchInput() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [value, setValue] = useState(searchParams.get("q") ?? "");
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const q = e.target.value;
