@@ -26,7 +26,7 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        border: hovered ? "2px solid rgba(255,255,255,0.8)" : "1px solid #2a3040",
+        border: hovered ? "2px solid rgba(255,255,255,0.8)" : "2px solid #2a3040",
         borderRadius: "12px",
         padding: "1.5rem",
         height: "100%",
