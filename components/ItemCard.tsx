@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useState } from "react";
 import type { Item } from "@/lib/supabase";
@@ -24,7 +26,7 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        border: hovered ? "1px solid rgba(255,255,255,0.25)" : "1px solid var(--border)",
+        border: hovered ? "1px solid rgba(255,255,255,0.25)" : "1px solid #2a3040",
         borderRadius: "12px",
         padding: "1.5rem",
         height: "100%",
@@ -35,6 +37,7 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
         animation: `fadeUp 0.5s ease ${index * 0.04}s forwards`,
         position: "relative",
         overflow: "hidden",
+        background: "linear-gradient(135deg, #141820 0%, #0f1117 60%, #111418 100%)",
         transition: "border-color 300ms ease, box-shadow 300ms ease",
         boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.3)" : "none",
       }}
