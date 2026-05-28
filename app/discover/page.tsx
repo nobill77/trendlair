@@ -3,7 +3,7 @@ import type { Item } from "@/lib/supabase";
 import ItemCard from "@/components/ItemCard";
 
 interface DiscoverPageProps {
-  searchParams: Promise<{ tag?: string; type?: string; q?: string; sort?: string }>;
+  searchParams: Promise<{ tag?: string; type?: string; q?: string; sort?: string; source?: string }>;
 }
 
 export default async function DiscoverPage({ searchParams }: DiscoverPageProps) {
@@ -12,6 +12,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
   const activeType = params.type;
   const searchQuery = params.q;
   const sortOrder = params.sort;
+  const activeSource = params.source;
 
   let query = supabase
     .from("items")
@@ -21,6 +22,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
   if (activeTag) query = query.contains("tags", [activeTag]);
   if (activeType) query = query.eq("type", activeType);
+  if (activeSource) query = query.eq("source", activeSource);
   if (searchQuery) query = query.ilike("title", `%${searchQuery}%`);
 
   const { data: items } = await query;
@@ -37,7 +39,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     transition: "all 0.2s",
   });
 
-  const isDefault = !activeType && !activeTag && !sortOrder && !searchQuery;
+  const isDefault = !activeType && !activeTag && !sortOrder && !searchQuery && !activeSource;
 
   return (
     <main style={{ minHeight: "100vh", padding: "calc(56px + 3rem) 2rem 4rem", maxWidth: "1400px", margin: "0 auto" }}>
@@ -70,6 +72,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           <a href="/discover?type=tool" style={linkStyle(activeType === "tool")}>🚀 Tools</a>
           <a href="/discover?type=repo" style={linkStyle(activeType === "repo")}>📖 Open Source</a>
           <a href="/discover?type=article" style={linkStyle(activeType === "article")}>📰 Articles</a>
+          <a href="/discover?source=reddit" style={linkStyle(params.source === "reddit")}>🟤 Reddit</a>
         </div>
 
         <p style={{ fontSize: "13px", color: "var(--muted)", marginTop: "1rem" }}>
