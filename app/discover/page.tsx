@@ -1,8 +1,15 @@
 import { supabase } from "@/lib/supabase";
 import type { Item } from "@/lib/supabase";
+import type { Metadata } from "next";
 import ItemCard from "@/components/ItemCard";
 import ScrollSection from "@/components/ScrollSection";
 import SearchInput from "@/components/SearchInput";
+import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Discover",
+  description: "Browse trending AI repos, tools, articles, and discussions curated from GitHub, HackerNews, Product Hunt, and Reddit.",
+};
 
 interface DiscoverPageProps {
   searchParams: Promise<{ tag?: string; type?: string; q?: string; sort?: string; source?: string }>;
@@ -76,7 +83,9 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
         {/* Search */}
         <div style={{ marginBottom: "1.5rem" }}>
-          <SearchInput />
+          <Suspense fallback={<div style={{ width: "500px", maxWidth: "100%", height: "40px", background: "var(--surface)", borderRadius: "8px", border: "1px solid var(--border)" }} />}>
+            <SearchInput />
+          </Suspense>
         </div>
 
         {/* Intent Navigation */}

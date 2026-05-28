@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
 import { Item } from "@/lib/supabase";
 import BookmarkButton from "@/components/BookmarkButton";
+import SkeletonCard from "@/components/SkeletonCard";
 import Link from "next/link";
 import TagBadge from "@/components/TagBadge";
 
@@ -40,8 +41,16 @@ export default function BookmarksPage() {
   }
 
   if (authLoading || loading) return (
-    <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <p style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>Loading...</p>
+    <main style={{ paddingTop: "80px", minHeight: "100vh", padding: "80px 2rem 4rem" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ marginBottom: "2rem" }}>
+          <div className="skeleton" style={{ width: "180px", height: "28px", marginBottom: "0.5rem" }} />
+          <div className="skeleton" style={{ width: "100px", height: "14px" }} />
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.5rem" }}>
+          {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+        </div>
+      </div>
     </main>
   );
 
