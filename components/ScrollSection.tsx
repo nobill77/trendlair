@@ -40,15 +40,18 @@ export default function ScrollSection({ title, items }: { title: string; items: 
           <button onClick={() => scroll("right")} style={btnStyle} aria-label="Scroll right">→</button>
         </div>
       </div>
-      <div
-        ref={ref}
-        style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "4px", paddingRight: "2rem", scrollbarWidth: "none" }}
-      >
-        {items.map((item: Item, i: number) => (
-          <div key={item.id} style={{ minWidth: "285px", maxWidth: "285px", flexShrink: 0 }}>
-            <ItemCard item={item} index={i} />
-          </div>
-        ))}
+      <div style={{ position: "relative" }}>
+        <div
+          ref={ref}
+          style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "4px", paddingRight: "2rem", scrollbarWidth: "none" }}
+        >
+          {items.map((item: Item, i: number) => (
+            <div key={item.id} style={{ minWidth: "285px", maxWidth: "285px", flexShrink: 0 }}>
+              <ItemCard item={item} index={i} />
+            </div>
+          ))}
+        </div>
+        <div style={{ position: "absolute", right: 0, top: 0, bottom: "4px", width: "80px", background: "linear-gradient(to right, transparent, var(--bg))", pointerEvents: "none" }} />
       </div>
     </div>
   );
