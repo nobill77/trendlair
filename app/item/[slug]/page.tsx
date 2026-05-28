@@ -4,9 +4,41 @@ import ItemCard from "@/components/ItemCard";
 import TagBadge from "@/components/TagBadge";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 interface ItemPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: ItemPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const { data: item } = await supabase
+    .from("items")
+    .select("title, description, tags")
+    .eq("slug", slug)
+    .single();
+
+  if (!item) return {};
+
+  return {
+    title: item.title,
+    description: item.description,
+    keywords: item.tags ?? [],
+    openGraph: {
+      title: item.title,
+      description: item.description,
+      url: `https://trendlair.com/item/${slug}`,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: item.title,
+      description: item.description,
+    },
+    alternates: {
+      canonical: `https://trendlair.com/item/${slug}`,
+    },
+  };
 }
 
 export default async function ItemPage({ params }: ItemPageProps) {
