@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import type { Item } from "@/lib/supabase";
 import ItemCard from "@/components/ItemCard";
 import ScrollSection from "@/components/ScrollSection";
+import SearchInput from "@/components/SearchInput";
 
 interface DiscoverPageProps {
   searchParams: Promise<{ tag?: string; type?: string; q?: string; sort?: string; source?: string }>;
@@ -24,7 +25,10 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
   if (activeTag) query = query.contains("tags", [activeTag]);
   if (activeType) query = query.eq("type", activeType);
   if (activeSource) query = query.eq("source", activeSource);
-  if (searchQuery) query = query.ilike("title", `%${searchQuery}%`);
+  if (searchQuery) {
+    const q = searchQuery.replace(/'/g, "''");
+    query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,tags.cs.{${q}}`);
+  }
 
   const { data: items } = await query;
 
@@ -67,17 +71,9 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         </h1>
 
         {/* Search */}
-        <form method="GET" style={{ marginBottom: "1.5rem" }}>
-          <div style={{ position: "relative", maxWidth: "500px" }}>
-            <input
-              name="q"
-              defaultValue={searchQuery}
-              placeholder="Search..."
-              style={{ width: "100%", padding: "10px 16px 10px 40px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "8px", color: "var(--text)", fontSize: "13px", outline: "none", fontFamily: "var(--font-mono)" }}
-            />
-            <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "var(--muted)" }}>🔍</span>
-          </div>
-        </form>
+        <div style={{ marginBottom: "1.5rem" }}>
+          <SearchInput />
+        </div>
 
         {/* Intent Navigation */}
         <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
