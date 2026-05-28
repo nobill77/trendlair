@@ -51,7 +51,7 @@ export default function ScrollSection({ title, items }: { title: string; items: 
             </div>
           ))}
         </div>
-        <div style={{ position: "absolute", right: 0, top: 0, bottom: "4px", width: "80px", background: "linear-gradient(to right, transparent, var(--bg))", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", right: 0, top: 0, bottom: "4px", width: "100px", background: "linear-gradient(to right, transparent, #0a0a0f)", pointerEvents: "none" }} />
       </div>
     </div>
   );
