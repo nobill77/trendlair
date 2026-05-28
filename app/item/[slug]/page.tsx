@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import type { Item } from "@/lib/supabase";
 import ItemCard from "@/components/ItemCard";
 import TagBadge from "@/components/TagBadge";
+import BackButton from "@/components/BackButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -199,24 +200,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
               : "View on GitHub →"}
             </a>
           )}
-          <Link
-            href="/discover"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "12px 28px",
-              border: "1px solid var(--border)",
-              color: "var(--muted)",
-              borderRadius: "8px",
-              fontSize: "12px",
-              letterSpacing: "0.08em",
-              textDecoration: "none",
-              textTransform: "uppercase",
-            }}
-          >
-            ← Back
-          </Link>
+          <BackButton />
         </div>
       </div>
 

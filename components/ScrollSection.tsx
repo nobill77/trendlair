@@ -63,6 +63,7 @@ export default function ScrollSection({ title, items, updatedAt }: { title: stri
       </div>
       <div
         ref={ref}
+        className="hide-scrollbar"
         style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "4px", paddingRight: "16px", scrollbarWidth: "none" }}
       >
         {items.map((item: Item, i: number) => (

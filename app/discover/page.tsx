@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import ItemCard from "@/components/ItemCard";
 import ScrollSection from "@/components/ScrollSection";
 import SearchInput from "@/components/SearchInput";
+import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -90,13 +91,13 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
         {/* Intent Navigation */}
         <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
-          <a href="/discover" style={linkStyle(isDefault)}>🔥 Trending</a>
-          <a href="/discover?sort=new" style={linkStyle(sortOrder === "new")}>✨ New</a>
-          <a href="/discover?tag=ai" style={linkStyle(activeTag === "ai")}>🤖 AI</a>
-          <a href="/discover?type=tool" style={linkStyle(activeType === "tool")}>🚀 Tools</a>
-          <a href="/discover?type=repo" style={linkStyle(activeType === "repo")}>📖 Open Source</a>
-          <a href="/discover?type=article" style={linkStyle(activeType === "article")}>📰 Articles</a>
-          <a href="/discover?source=reddit" style={linkStyle(params.source === "reddit")}>🟤 Reddit</a>
+          <Link href="/discover" style={linkStyle(isDefault)}>🔥 Trending</Link>
+          <Link href="/discover?sort=new" style={linkStyle(sortOrder === "new")}>✨ New</Link>
+          <Link href="/discover?tag=ai" style={linkStyle(activeTag === "ai")}>🤖 AI</Link>
+          <Link href="/discover?type=tool" style={linkStyle(activeType === "tool")}>🚀 Tools</Link>
+          <Link href="/discover?type=repo" style={linkStyle(activeType === "repo")}>📖 Open Source</Link>
+          <Link href="/discover?type=article" style={linkStyle(activeType === "article")}>📰 Articles</Link>
+          <Link href="/discover?source=reddit" style={linkStyle(params.source === "reddit")}>🟤 Reddit</Link>
         </div>
 
         <p style={{ fontSize: "13px", color: "var(--muted)", marginTop: "1rem" }}>

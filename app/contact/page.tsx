@@ -67,23 +67,7 @@ export default function ContactPage() {
         {/* Contact channels */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1rem", marginBottom: "3.5rem" }}>
           {channels.map(({ icon, title, desc, action, href }) => (
-            <a
-              key={title}
-              href={href}
-              style={{
-                border: "1px solid var(--border)", borderRadius: "12px", padding: "1.5rem",
-                background: "var(--surface)", textDecoration: "none", display: "block",
-                transition: "border-color 0.2s ease, background 0.2s ease",
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(200,255,0,0.25)";
-                (e.currentTarget as HTMLAnchorElement).style.background = "var(--surface2)";
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--border)";
-                (e.currentTarget as HTMLAnchorElement).style.background = "var(--surface)";
-              }}
-            >
+            <a key={title} href={href} className="contact-card">
               <div style={{ fontSize: "24px", marginBottom: "0.75rem" }}>{icon}</div>
               <div style={{ fontSize: "15px", fontWeight: 700, color: "var(--text)", fontFamily: "var(--font-display)", marginBottom: "0.5rem" }}>{title}</div>
               <div style={{ fontSize: "13px", color: "var(--muted)", lineHeight: 1.6, marginBottom: "1rem" }}>{desc}</div>

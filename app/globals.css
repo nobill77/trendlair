@@ -81,6 +81,33 @@ body::before {
   box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
+.contact-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: var(--surface);
+  text-decoration: none;
+  display: block;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.contact-card:hover {
+  border-color: rgba(200,255,0,0.25);
+  background: var(--surface2);
+}
+
+.nav-link {
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--text) !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .card-color-0 { background: var(--card-blue) !important; border-color: rgba(59,130,246,0.15) !important; }
 .card-color-1 { background: var(--card-purple) !important; border-color: rgba(139,92,246,0.15) !important; }
 .card-color-2 { background: var(--card-green) !important; border-color: rgba(16,185,129,0.15) !important; }

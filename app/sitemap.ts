@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { supabase } from "@/lib/supabase";
 
+export const revalidate = 3600; // regenerate sitemap every hour
+
 const BASE_URL = "https://trendlair.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

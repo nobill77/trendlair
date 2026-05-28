@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 const features = [
   { icon: "⚡", title: "Real-Time Updates", desc: "GitHub, Product Hunt, HackerNews & Reddit — updated daily automatically" },
@@ -14,7 +15,13 @@ const sources = [
   { icon: "🟤", name: "Reddit", desc: "Discussions from 6 subreddits" },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { count } = await supabase
+    .from("items")
+    .select("id", { count: "exact", head: true });
+
+  const itemCount = count ? `${count}+` : "200+";
+
   return (
     <main style={{ minHeight: "100vh", paddingTop: "56px", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "fixed", inset: 0, backgroundImage: "linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)", backgroundSize: "60px 60px", opacity: 0.3, pointerEvents: "none" }} />
@@ -27,7 +34,7 @@ export default function HomePage() {
         </div>
 
         <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 8vw, 6rem)", fontWeight: 800, lineHeight: 0.95, letterSpacing: "-0.04em", color: "var(--text)", marginBottom: "1.5rem" }}>
-          Find What's<br /><span style={{ color: "var(--accent)" }}>Trending</span><br />in Tech
+          Find What&apos;s<br /><span style={{ color: "var(--accent)" }}>Trending</span><br />in Tech
         </h1>
 
         <p style={{ fontSize: "15px", color: "var(--muted)", lineHeight: 1.7, marginBottom: "2.5rem", maxWidth: "480px" }}>
@@ -44,7 +51,12 @@ export default function HomePage() {
         </div>
 
         <div style={{ display: "flex", gap: "3rem", marginTop: "4rem", flexWrap: "wrap", justifyContent: "center", opacity: 0, animation: "fadeUp 0.8s 0.3s ease forwards" }}>
-          {[{ label: "Items Tracked", value: "200+" }, { label: "Sources", value: "4" }, { label: "Updated", value: "Daily" }, { label: "Free", value: "100%" }].map(({ label, value }) => (
+          {[
+            { label: "Items Tracked", value: itemCount },
+            { label: "Sources", value: "4" },
+            { label: "Updated", value: "Daily" },
+            { label: "Free", value: "100%" },
+          ].map(({ label, value }) => (
             <div key={label} style={{ textAlign: "center" }}>
               <div style={{ fontSize: "20px", fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--text)" }}>{value}</div>
               <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>{label}</div>
@@ -55,7 +67,6 @@ export default function HomePage() {
 
       <div style={{ height: "1px", background: "var(--border)", margin: "0 2rem" }} />
 
-      {/* Sources Section */}
       <section style={{ position: "relative", maxWidth: "1100px", margin: "0 auto", padding: "4rem 2rem", opacity: 0, animation: "fadeUp 0.8s 0.4s ease forwards" }}>
         <p style={{ textAlign: "center", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "1rem" }}>Data Sources</p>
         <h2 style={{ textAlign: "center", fontFamily: "var(--font-display)", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, color: "var(--text)", marginBottom: "2rem", letterSpacing: "-0.02em" }}>
