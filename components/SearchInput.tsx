@@ -12,7 +12,7 @@ export default function SearchInput() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const q = e.target.value;
     setValue(q);
-    clearTimeout(timer.current);
+    clearTimeout(timer.current ?? undefined);
     timer.current = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
       if (q) {
