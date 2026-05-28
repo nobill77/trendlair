@@ -38,24 +38,22 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,tags.cs.{${q}}`);
   }
 
-  const { data: items } = await query;
+  const isDefault = !activeType && !activeTag && !sortOrder && !searchQuery && !activeSource;
 
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: trending } = await supabase
-    .from("items").select("*").order("trend_score", { ascending: false }).limit(5);
-
   const [
+    { data: items },
+    { data: trending },
     { data: trendingHour },
     { data: justLaunched },
     { data: hiddenGems },
   ] = await Promise.all([
-    supabase.from("items").select("*").gte("updated_at", since24h).order("trend_score", { ascending: false }).limit(10),
-    supabase.from("items").select("*").order("created_at", { ascending: false }).limit(5),
-    supabase.from("items").select("*").gt("stars", 500)
-      .neq("source", "github")
-      .order("stars", { ascending: false })
-      .limit(5),
+    query,
+    isDefault ? supabase.from("items").select("*").order("trend_score", { ascending: false }).limit(5) : { data: [] as Item[] },
+    isDefault ? supabase.from("items").select("*").gte("updated_at", since24h).order("trend_score", { ascending: false }).limit(10) : { data: [] as Item[] },
+    isDefault ? supabase.from("items").select("*").order("created_at", { ascending: false }).limit(5) : { data: [] as Item[] },
+    isDefault ? supabase.from("items").select("*").gt("stars", 500).neq("source", "github").order("stars", { ascending: false }).limit(5) : { data: [] as Item[] },
   ]);
 
   const linkStyle = (active: boolean) => ({
@@ -69,8 +67,6 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     textDecoration: "none",
     transition: "all 0.2s",
   });
-
-  const isDefault = !activeType && !activeTag && !sortOrder && !searchQuery && !activeSource;
 
   return (
     <main style={{ minHeight: "100vh", padding: "calc(56px + 3rem) 2rem 4rem", maxWidth: "1400px", margin: "0 auto" }}>

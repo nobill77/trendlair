@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Trendlair",
+  title: "Terms of Service",
   description: "Terms governing your use of Trendlair.",
 };
 
