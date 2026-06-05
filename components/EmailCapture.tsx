@@ -23,7 +23,7 @@ export default function EmailCapture({ itemName }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          access_key: 'e5cdbf0a-9ef8-4902-9db3-472a66dcec87',
+          access_key: '1433c373-657a-4855-9c7b-37403bb1f93c',
           email,
           item: itemName,
           subject: `New subscriber from ${itemName} — Trendlair`,
