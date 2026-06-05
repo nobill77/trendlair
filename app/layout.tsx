@@ -17,7 +17,20 @@ export const metadata: Metadata = {
     template: "%s — Trendlair",
   },
   description: "Discover trending AI repos, tools, and projects curated in real-time from GitHub, HackerNews, Product Hunt & Reddit.",
-  keywords: ["trending tech", "github trending", "ai tools", "developer tools", "hackernews", "product hunt"],
+  keywords: [
+    "trending tech tools",
+    "github trending repositories",
+    "AI tools 2025",
+    "developer tools trending",
+    "product hunt trending",
+    "hackernews top posts",
+    "open source trending",
+    "new AI projects",
+    "trending developer tools",
+    "tech discovery",
+    "startup tools trending",
+    "best new github repos",
+  ],
   openGraph: {
     type: "website",
     siteName: "Trendlair",
@@ -61,3 +74,4 @@ export default function RootLayout({
     </html>
   );
 }
+
