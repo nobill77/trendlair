@@ -4,6 +4,7 @@ import ItemCard from "@/components/ItemCard";
 import TagBadge from "@/components/TagBadge";
 import BackButton from "@/components/BackButton";
 import CopyLinkButton from "@/components/CopyLinkButton";
+import EmailCapture from "@/components/EmailCapture";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -216,7 +217,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
           border: "1px solid var(--border)",
           borderRadius: "12px",
           overflow: "hidden",
-          marginBottom: "4rem",
+          marginBottom: "2rem",
         }}
       >
         {[
@@ -263,6 +264,9 @@ export default async function ItemPage({ params }: ItemPageProps) {
           </div>
         ))}
       </div>
+
+      {/* Email Capture */}
+      <EmailCapture itemName={item.title} />
 
       {/* Related items */}
       {relatedItems.length > 0 && (
