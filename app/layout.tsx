@@ -48,6 +48,7 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-snippet": -1 },
   },
+  verification: { google: "-iuoixAHRgWYp2WJDs5DlmSPPVKgjiqCPyb-fs5e9WM" },
   alternates: {
     canonical: "https://trendlair.com",
   },
@@ -74,4 +75,5 @@ export default function RootLayout({
     </html>
   );
 }
+
 
