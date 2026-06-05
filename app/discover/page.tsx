@@ -8,8 +8,16 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Discover",
-  description: "Browse trending AI repos, tools, articles, and discussions curated from GitHub, HackerNews, Product Hunt, and Reddit.",
+  title: "Discover Trending Tech — AI Tools, GitHub Repos & More",
+  description: "Browse the hottest AI tools, GitHub repositories, and dev projects trending on GitHub, HackerNews, Product Hunt, and Reddit. Updated every 6 hours.",
+  keywords: ["trending AI tools", "trending GitHub repos", "product hunt trending", "hackernews top", "new developer tools", "open source trending 2025"],
+  openGraph: {
+    title: "Discover Trending Tech — AI Tools, GitHub Repos & More",
+    description: "The hottest AI tools, repos, and dev projects updated every 6 hours.",
+    url: "https://trendlair.com/discover",
+    type: "website",
+  },
+  alternates: { canonical: "https://trendlair.com/discover" },
 };
 
 interface DiscoverPageProps {
@@ -151,3 +159,4 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     </main>
   );
 }
+
