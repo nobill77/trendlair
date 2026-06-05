@@ -17,26 +17,49 @@ export async function generateMetadata({ params }: ItemPageProps): Promise<Metad
   const { slug } = await params;
   const { data: item } = await supabase
     .from("items")
-    .select("title, description, tags")
+    .select("title, description, tags, source, trend_score")
     .eq("slug", slug)
     .single();
 
   if (!item) return {};
 
+  // SEO-optimized title: keep under 60 chars, add context
+  const rawTitle = item.title ?? slug;
+  const seoTitle = rawTitle.length > 55
+    ? rawTitle.slice(0, 52) + "..."
+    : rawTitle;
+
+  // SEO-optimized description: 120-160 chars
+  const rawDesc = item.description ?? "";
+  const sourceLabel = item.source === "product_hunt" ? "Product Hunt tool"
+    : item.source === "hackernews" ? "HackerNews story"
+    : item.source === "reddit" ? "Reddit discussion"
+    : "GitHub repository";
+  const stars = item.trend_score ? ` · ${item.trend_score.toLocaleString()} stars` : "";
+  let seoDesc = rawDesc.length > 120
+    ? rawDesc.slice(0, 117) + "..."
+    : rawDesc.length < 60
+    ? `${rawDesc} — Trending ${sourceLabel}${stars} on Trendlair.`.slice(0, 160)
+    : rawDesc;
+  if (seoDesc.length < 120) {
+    seoDesc = `${seoDesc} Discover trending tech tools and repositories on Trendlair.`.slice(0, 160);
+  }
+
   return {
-    title: item.title,
-    description: item.description,
-    keywords: item.tags ?? [],
+    title: seoTitle,
+    description: seoDesc,
+    keywords: [...(item.tags ?? []), "trending", item.source ?? "tech", "open source"],
     openGraph: {
-      title: item.title,
-      description: item.description,
+      title: seoTitle,
+      description: seoDesc,
       url: `https://trendlair.com/item/${slug}`,
       type: "article",
+      siteName: "Trendlair",
     },
     twitter: {
       card: "summary_large_image",
-      title: item.title,
-      description: item.description,
+      title: seoTitle,
+      description: seoDesc,
     },
     alternates: {
       canonical: `https://trendlair.com/item/${slug}`,
@@ -74,7 +97,32 @@ export default async function ItemPage({ params }: ItemPageProps) {
     relatedItems = related || [];
   }
 
+  // JSON-LD structured data for Google
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": item.source === "product_hunt" ? "SoftwareApplication" : "TechArticle",
+    "name": item.title,
+    "description": item.description,
+    "url": item.url,
+    "datePublished": item.created_at,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Trendlair",
+      "url": "https://trendlair.com"
+    },
+    ...(item.trend_score && { "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": Math.min(5, item.trend_score / 1000).toFixed(1),
+      "reviewCount": item.trend_score
+    }}),
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <main
       style={{
         minHeight: "100vh",
@@ -300,5 +348,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
         </section>
       )}
     </main>
+    </>
   );
 }
+
