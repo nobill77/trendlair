@@ -6,6 +6,7 @@ import ScrollSection from "@/components/ScrollSection";
 import SearchInput from "@/components/SearchInput";
 import Link from "next/link";
 import { Suspense } from "react";
+import DiscoverEmailStrip from "@/components/DiscoverEmailStrip";
 
 export const metadata: Metadata = {
   title: "Discover Trending Tech — AI Tools, GitHub Repos & More",
@@ -103,44 +104,8 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           <Link href="/discover?source=reddit" style={linkStyle(params.source === "reddit")}>🟤 Reddit</Link>
         </div>
 
-        {/* Email strip — inline */}
-        <div id="email-strip" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 0", marginBottom: "0.5rem", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "11px", color: "var(--muted)", whiteSpace: "nowrap" }}>📬 Weekly trends free:</span>
-          <input id="es-input" type="email" placeholder="your@email.com" style={{ background: "var(--bg)", border: "1px solid var(--border)", padding: "5px 10px", fontSize: "11px", color: "var(--text)", outline: "none", width: "180px" }} />
-          <button
-            style={{ background: "var(--accent)", color: "#000", border: "none", padding: "5px 12px", fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}
-            onClick={() => {
-              const input = document.getElementById("es-input") as HTMLInputElement;
-              if (!input?.value?.includes("@")) return;
-              fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ access_key: "1433c373-657a-4855-9c7b-37403bb1f93c", email: input.value, subject: "Discover page subscriber", from_name: "Trendlair" }) });
-              input.value = "✓ Subscribed!";
-              (input as HTMLInputElement).disabled = true;
-            }}
-          >Subscribe →</button>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-          <p style={{ fontSize: "13px", color: "var(--muted)" }}>
-            {items?.length ?? 0} items · {sortOrder === "new" ? "Sorted by date" : "Sorted by stars & momentum"}
-          </p>
-          {!isDefault && (
-            <Link href="/discover" style={{ fontSize: "11px", color: "var(--accent)", textDecoration: "none", border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px", padding: "3px 10px" }}>
-              ✕ Clear filters
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {/* Scroll sections */}
-      {isDefault && (
-        <div style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
-          <ScrollSection title="⚡ Hot Right Now" items={trendingHour ?? []} />
-          <ScrollSection title="🔥 Trending Now"  items={trending      ?? []} />
-          <ScrollSection title="✨ Just Launched" items={justLaunched  ?? []} />
-          <ScrollSection title="💎 Hidden Gems"   items={hiddenGems    ?? []} />
-          <div style={{ height: "1px", background: "var(--border)" }} />
-        </div>
-      )}
+        {/* Email strip */}
+        <DiscoverEmailStrip />
 
       {/* Items grid */}
       {!items || items.length === 0 ? (
@@ -163,5 +128,6 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     </main>
   );
 }
+
 
 
