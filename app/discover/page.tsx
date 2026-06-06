@@ -7,6 +7,7 @@ import SearchInput from "@/components/SearchInput";
 import Link from "next/link";
 import { Suspense } from "react";
 import EmailCapture from "@/components/EmailCapture";
+import EmailStrip from "@/components/EmailStrip";
 
 export const metadata: Metadata = {
   title: "Discover Trending Tech — AI Tools, GitHub Repos & More",
@@ -161,6 +162,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     </main>
   );
 }
+
 
 
 
