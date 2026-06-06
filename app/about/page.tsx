@@ -2,8 +2,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About",
-  description: "Learn what Trendlair is and how it works.",
+  title: "About Trendlair — Trending Tech Tools & Repos, Updated Daily",
+  description: "Trendlair aggregates trending GitHub repos, Product Hunt tools, HackerNews stories, and Reddit discussions in one place. Updated every 6 hours.",
+  keywords: ["trending tech tools", "github trending", "product hunt", "hackernews", "developer discovery"],
+  alternates: { canonical: "https://trendlair.com/about/" },
 };
 
 const sources = [
@@ -121,3 +123,4 @@ export default function AboutPage() {
     </main>
   );
 }
+
