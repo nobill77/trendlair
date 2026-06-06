@@ -68,7 +68,20 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <Navbar />
-          {children}
+    
+      {/* Google Analytics */}
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-J65BEX7GRP" />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-J65BEX7GRP');
+          `,
+        }}
+      />
+      {children}
           <Footer />
         </AuthProvider>
       </body>
