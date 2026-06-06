@@ -313,7 +313,13 @@ export default async function ItemPage({ params }: ItemPageProps) {
         ))}
       </div>
 
-      {/* Email Capture */}
+
+      {/* Mid-page Email Capture */}
+      <div style={{ margin: "2rem 0" }}>
+        <EmailCapture itemName={item.title} />
+      </div>
+
+            {/* Email Capture — Bottom */}
       <EmailCapture itemName={item.title} />
 
       {/* Related items */}
@@ -351,4 +357,5 @@ export default async function ItemPage({ params }: ItemPageProps) {
     </>
   );
 }
+
 
