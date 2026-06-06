@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EmailCapture from "@/components/EmailCapture";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -94,6 +95,9 @@ export default function ContactPage() {
           <Link href="/terms" style={{ color: "var(--muted)", textDecoration: "none" }}>Terms of Service</Link>
           <Link href="/about" style={{ color: "var(--muted)", textDecoration: "none" }}>About</Link>
         </div>
+      </div>
+      <div style={{ maxWidth: "700px", margin: "0 auto", padding: "0 2rem 4rem" }}>
+        <EmailCapture itemName="Trendlair Weekly" />
       </div>
     </main>
   );
