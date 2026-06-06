@@ -104,8 +104,10 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           <Link href="/discover?source=reddit" style={linkStyle(params.source === "reddit")}>🟤 Reddit</Link>
         </div>
 
-        {/* Email strip — small, inline, unobtrusive */}
-        <EmailStrip />
+        {/* Email strip */}
+        <Suspense fallback={null}>
+          <EmailStrip />
+        </Suspense>
 
         <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
           <p style={{ fontSize: "13px", color: "var(--muted)" }}>
@@ -151,3 +153,4 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     </main>
   );
 }
+
