@@ -120,11 +120,9 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
-      {/* Email Capture Section */}
-      <section style={{ padding: "4rem 2rem", maxWidth: "700px", margin: "0 auto" }}>
-        <EmailCapture itemName="Trendlair Weekly" />
-      </section>
+
     </main>
   );
 }
+
 
