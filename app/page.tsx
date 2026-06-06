@@ -1,5 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import EmailCapture from "@/components/EmailCapture";
 import { supabase } from "@/lib/supabase";
+
+export const metadata: Metadata = {
+  title: "Trendlair — Discover Trending Tech Tools, Repos & AI Projects",
+  description: "Find the hottest GitHub repos, Product Hunt tools, HackerNews stories, and Reddit discussions — updated every 6 hours. Built for developers and founders.",
+  alternates: { canonical: "https://trendlair.com/" },
+};
 
 const features = [
   { icon: "⚡", title: "Real-Time Updates", desc: "GitHub, Product Hunt, HackerNews & Reddit — updated daily automatically" },
@@ -112,6 +120,11 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+      {/* Email Capture Section */}
+      <section style={{ padding: "4rem 2rem", maxWidth: "700px", margin: "0 auto" }}>
+        <EmailCapture itemName="Trendlair Weekly" />
+      </section>
     </main>
   );
 }
+
