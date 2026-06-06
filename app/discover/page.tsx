@@ -80,7 +80,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     <main style={{ minHeight: "100vh", padding: "calc(56px + 3rem) 2rem 4rem", maxWidth: "1400px", margin: "0 auto" }}>
 
       {/* Header */}
-      <div style={{ marginBottom: "2rem", borderBottom: "1px solid var(--border)", paddingBottom: "2rem" }}>
+      <div style={{ marginBottom: "2rem", borderBottom: "1px solid var(--border)", paddingBottom: "1.5rem" }}>
         <p style={{ fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "0.5rem", fontWeight: 700 }}>
           / Discover
         </p>
@@ -104,16 +104,37 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           <Link href="/discover?source=reddit" style={linkStyle(params.source === "reddit")}>🟤 Reddit</Link>
         </div>
 
-        {/* Email strip */}
+        {/* Email strip — small and inline */}
         <DiscoverEmailStrip />
 
-      {/* Items grid */}
+        <p style={{ fontSize: "13px", color: "var(--muted)", marginTop: "0.5rem" }}>
+          {items?.length ?? 0} items · {sortOrder === "new" ? "Sorted by date" : "Sorted by stars & momentum"}
+          {!isDefault && (
+            <Link href="/discover" style={{ marginLeft: "12px", fontSize: "11px", color: "var(--accent)", textDecoration: "none", border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px", padding: "3px 10px" }}>
+              ✕ Clear filters
+            </Link>
+          )}
+        </p>
+      </div>
+
+      {/* 4 Scroll sections — only on default view */}
+      {isDefault && (
+        <div style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+          <ScrollSection title="⚡ Hot Right Now" items={trendingHour ?? []} />
+          <ScrollSection title="🔥 Trending Now"  items={trending      ?? []} />
+          <ScrollSection title="✨ Just Launched" items={justLaunched  ?? []} />
+          <ScrollSection title="💎 Hidden Gems"   items={hiddenGems    ?? []} />
+          <div style={{ height: "1px", background: "var(--border)" }} />
+        </div>
+      )}
+
+      {/* All items grid */}
       {!items || items.length === 0 ? (
         <div style={{ textAlign: "center", padding: "6rem 2rem", border: "1px dashed var(--border)" }}>
           <div style={{ fontSize: "48px", marginBottom: "1rem" }}>🔍</div>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: "24px", fontWeight: 700, color: "var(--text)", marginBottom: "0.75rem" }}>No results found</h2>
           <p style={{ fontSize: "13px", color: "var(--muted)", marginBottom: "1.5rem" }}>Try a different search or browse by category</p>
-          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
             <Link href="/discover" style={{ fontSize: "12px", color: "var(--accent)", textDecoration: "none", border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px", padding: "5px 14px" }}>🔥 Trending</Link>
             <Link href="/discover?tag=ai" style={{ fontSize: "12px", color: "var(--muted)", textDecoration: "none", border: "1px solid var(--border)", borderRadius: "100px", padding: "5px 14px" }}>🤖 AI</Link>
           </div>
@@ -128,6 +149,3 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     </main>
   );
 }
-
-
-
