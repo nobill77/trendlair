@@ -125,11 +125,6 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         <div style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
           <ScrollSection title="⚡ Hot Right Now" items={trendingHour ?? []} />
 
-          {/* Email Capture — mid page, visible without scrolling */}
-          <div style={{ padding: "1.5rem 0" }}>
-            <EmailCapture itemName="Trendlair Weekly" />
-          </div>
-
           <ScrollSection title="🔥 Trending Now"       items={trending      ?? []} />
           <ScrollSection title="✨ Just Launched"      items={justLaunched  ?? []} />
           <ScrollSection title="💎 Hidden Gems"        items={hiddenGems    ?? []} />
@@ -166,6 +161,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     </main>
   );
 }
+
 
 
 
