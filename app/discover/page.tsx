@@ -6,7 +6,6 @@ import ScrollSection from "@/components/ScrollSection";
 import SearchInput from "@/components/SearchInput";
 import Link from "next/link";
 import { Suspense } from "react";
-import EmailCapture from "@/components/EmailCapture";
 import EmailStrip from "@/components/EmailStrip";
 
 export const metadata: Metadata = {
@@ -49,7 +48,6 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
   }
 
   const isDefault = !activeType && !activeTag && !sortOrder && !searchQuery && !activeSource;
-
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const [
@@ -80,7 +78,9 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
   return (
     <main style={{ minHeight: "100vh", padding: "calc(56px + 3rem) 2rem 4rem", maxWidth: "1400px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "3rem", borderBottom: "1px solid var(--border)", paddingBottom: "2rem" }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: "2rem", borderBottom: "1px solid var(--border)", paddingBottom: "2rem" }}>
         <p style={{ fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "0.5rem", fontWeight: 700 }}>
           / Discover
         </p>
@@ -88,15 +88,13 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           Trending Now
         </h1>
 
-        {/* Search */}
         <div style={{ marginBottom: "1.5rem" }}>
-          <Suspense fallback={<div style={{ width: "500px", maxWidth: "100%", height: "40px", background: "var(--surface)", borderRadius: "8px", border: "1px solid var(--border)" }} />}>
+          <Suspense fallback={<div style={{ width: "500px", maxWidth: "100%", height: "40px", background: "var(--surface)", border: "1px solid var(--border)" }} />}>
             <SearchInput />
           </Suspense>
         </div>
 
-        {/* Intent Navigation */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "8px", marginBottom: "1rem", flexWrap: "wrap" }}>
           <Link href="/discover" style={linkStyle(isDefault)}>🔥 Trending</Link>
           <Link href="/discover?sort=new" style={linkStyle(sortOrder === "new")}>✨ New</Link>
           <Link href="/discover?tag=ai" style={linkStyle(activeTag === "ai")}>🤖 AI</Link>
@@ -106,50 +104,41 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           <Link href="/discover?source=reddit" style={linkStyle(params.source === "reddit")}>🟤 Reddit</Link>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem", flexWrap: "wrap" }}>
+        {/* Email strip — small, inline, unobtrusive */}
+        <EmailStrip />
+
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
           <p style={{ fontSize: "13px", color: "var(--muted)" }}>
             {items?.length ?? 0} items · {sortOrder === "new" ? "Sorted by date" : "Sorted by stars & momentum"}
           </p>
           {!isDefault && (
-            <Link href="/discover" style={{
-              fontSize: "11px", color: "var(--accent)", textDecoration: "none",
-              border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px",
-              padding: "3px 10px", letterSpacing: "0.05em",
-            }}>
+            <Link href="/discover" style={{ fontSize: "11px", color: "var(--accent)", textDecoration: "none", border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px", padding: "3px 10px" }}>
               ✕ Clear filters
             </Link>
           )}
         </div>
       </div>
 
+      {/* Scroll sections */}
       {isDefault && (
         <div style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
           <ScrollSection title="⚡ Hot Right Now" items={trendingHour ?? []} />
-
-          <ScrollSection title="🔥 Trending Now"       items={trending      ?? []} />
-          <ScrollSection title="✨ Just Launched"      items={justLaunched  ?? []} />
-          <ScrollSection title="💎 Hidden Gems"        items={hiddenGems    ?? []} />
+          <ScrollSection title="🔥 Trending Now"  items={trending      ?? []} />
+          <ScrollSection title="✨ Just Launched" items={justLaunched  ?? []} />
+          <ScrollSection title="💎 Hidden Gems"   items={hiddenGems    ?? []} />
           <div style={{ height: "1px", background: "var(--border)" }} />
         </div>
       )}
 
+      {/* Items grid */}
       {!items || items.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "6rem 2rem", border: "1px dashed var(--border)", borderRadius: "16px" }}>
+        <div style={{ textAlign: "center", padding: "6rem 2rem", border: "1px dashed var(--border)" }}>
           <div style={{ fontSize: "48px", marginBottom: "1rem" }}>🔍</div>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: "24px", fontWeight: 700, color: "var(--text)", marginBottom: "0.75rem" }}>No results found</h2>
-          <p style={{ fontSize: "13px", color: "var(--muted)", marginBottom: "1.5rem" }}>
-            Try a different search or browse by category
-          </p>
+          <p style={{ fontSize: "13px", color: "var(--muted)", marginBottom: "1.5rem" }}>Try a different search or browse by category</p>
           <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/discover" style={{ fontSize: "12px", color: "var(--accent)", textDecoration: "none", border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px", padding: "5px 14px" }}>
-              🔥 Trending
-            </Link>
-            <Link href="/discover?tag=ai" style={{ fontSize: "12px", color: "var(--muted)", textDecoration: "none", border: "1px solid var(--border)", borderRadius: "100px", padding: "5px 14px" }}>
-              🤖 AI
-            </Link>
-            <Link href="/discover?type=tool" style={{ fontSize: "12px", color: "var(--muted)", textDecoration: "none", border: "1px solid var(--border)", borderRadius: "100px", padding: "5px 14px" }}>
-              🚀 Tools
-            </Link>
+            <Link href="/discover" style={{ fontSize: "12px", color: "var(--accent)", textDecoration: "none", border: "1px solid rgba(200,255,0,0.3)", borderRadius: "100px", padding: "5px 14px" }}>🔥 Trending</Link>
+            <Link href="/discover?tag=ai" style={{ fontSize: "12px", color: "var(--muted)", textDecoration: "none", border: "1px solid var(--border)", borderRadius: "100px", padding: "5px 14px" }}>🤖 AI</Link>
           </div>
         </div>
       ) : (
@@ -162,8 +151,3 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     </main>
   );
 }
-
-
-
-
-
