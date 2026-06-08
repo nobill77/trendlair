@@ -19,19 +19,13 @@ export default function EmailCapture({ itemName }: Props) {
     setStatus('loading')
 
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_key: '1433c373-657a-4855-9c7b-37403bb1f93c',
-          email,
-          item: itemName,
-          subject: `New subscriber from ${itemName} — Trendlair`,
-          from_name: 'Trendlair'
-        })
+        body: JSON.stringify({ email, source: `item:${itemName}` })
       })
       const data = await res.json()
-      if (data.success) {
+      if (data.ok) {
         setStatus('success')
         setTimeout(() => setShown(false), 3000)
       } else {
@@ -51,13 +45,11 @@ export default function EmailCapture({ itemName }: Props) {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* top accent line */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
         background: 'linear-gradient(90deg, transparent, rgba(200,255,0,0.6), transparent)',
       }} />
 
-      {/* close button */}
       <button
         onClick={() => setShown(false)}
         style={{
@@ -67,7 +59,7 @@ export default function EmailCapture({ itemName }: Props) {
         }}
       >×</button>
 
-      <div style={{ padding: '2rem 2rem 2rem' }}>
+      <div style={{ padding: '2rem' }}>
         {status === 'success' ? (
           <div style={{ textAlign: 'center', padding: '1rem 0' }}>
             <div style={{ fontSize: '28px', marginBottom: '12px' }}>✅</div>
@@ -101,9 +93,7 @@ export default function EmailCapture({ itemName }: Props) {
               Join builders getting curated tech discoveries every week. No spam.
             </p>
 
-            <form onSubmit={handleSubmit} style={{
-              display: 'flex', gap: '10px', flexWrap: 'wrap',
-            }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <input
                 type="email"
                 value={email}
