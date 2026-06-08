@@ -57,6 +57,13 @@ export default function ItemCard({ item, index = 0 }: { item: Item; index?: numb
           <BookmarkButton itemId={item.id} />
         </div>
       </div>
+      {item.source === "product_hunt" && (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "-4px" }}>
+          <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "100px", border: "1px solid rgba(200,255,0,0.4)", color: "var(--accent)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700 }}>
+            🚀 Founder Tool
+          </span>
+        </div>
+      )}
 
       {item.url ? (
         <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
