@@ -7,6 +7,7 @@ import CopyLinkButton from "@/components/CopyLinkButton";
 import EmailCapture from "@/components/EmailCapture";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import FounderCard from "@/components/FounderCard";
 import type { Metadata } from "next";
 
 interface ItemPageProps {
@@ -254,6 +255,9 @@ export default async function ItemPage({ params }: ItemPageProps) {
           <CopyLinkButton />
         </div>
       </div>
+
+      {/* Founder Funnel Card */}
+      <FounderCard source={item.source || ""} />
 
       {/* Meta info */}
       <div
