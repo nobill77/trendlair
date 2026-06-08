@@ -7,20 +7,17 @@ export default function DiscoverEmailStrip() {
 
   async function go() {
     if (!val.includes('@')) return
-    await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        access_key: '1433c373-657a-4855-9c7b-37403bb1f93c',
-        email: val,
-        subject: 'Discover page subscriber',
-        from_name: 'Trendlair'
+    try {
+      await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: val, source: 'discover' })
       })
-    })
+    } catch {}
     setDone(true)
   }
 
-  if (done) return <p style={{ fontSize: '11px', color: 'var(--accent)', padding: '6px 0' }}>✅ You're in! Weekly trends coming your way.</p>
+  if (done) return <p style={{ fontSize: '11px', color: 'var(--accent)', padding: '6px 0' }}>✅ You&apos;re in! Weekly trends coming your way.</p>
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 0', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
