@@ -24,25 +24,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Link and Pull
-        run: |
-          vercel link --yes --token=$VERCEL_TOKEN --project=trendlair
-          vercel pull --yes --environment=production --token=$VERCEL_TOKEN || true
+      - name: Link project
+        run: vercel link --yes --token=$VERCEL_TOKEN --project=trendlair
 
-      - name: Build
-        run: |
-          set +e
-          vercel build --prod --token=$VERCEL_TOKEN
-          if [ -d ".vercel/output" ]; then
-            echo "✅ Build output confirmed"
-            exit 0
-          else
-            exit 1
-          fi
+      - name: Pull env vars
+        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN || true
+
+      - name: Build with Next.js
+        run: npm run build
 
       - name: Deploy
         run: |
           DEPLOY_OUT=$(vercel deploy --prod --prebuilt --token=$VERCEL_TOKEN 2>&1 | tail -1)
-          echo "Deploy: $DEPLOY_OUT"
-          echo "$DEPLOY_OUT" | grep -q "https://" && echo "✅ Deployed" || echo "⚠️ No URL but may have succeeded"
+          echo "$DEPLOY_OUT"
           exit 0
