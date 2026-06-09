@@ -8,7 +8,8 @@ import { supabase } from "@/lib/supabase-browser";
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/discover", label: "Discover" },
-  { href: "/radar", label: "📡 Radar" },
+  { href: "/radar",  label: "📡 Radar"  },
+  { href: "/alerts", label: "🔔 Alerts" },
   { href: "/workflows", label: "Workflows" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
