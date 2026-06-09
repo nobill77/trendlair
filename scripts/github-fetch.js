@@ -46,7 +46,7 @@ async function fetchGitHub() {
         url: repo.html_url,
         github_url: repo.html_url,
         tags: [topic, ...(repo.topics || [])].slice(0, 8),
-        trend_score: repo.stargazers_count,
+        trend_score: Math.min(Math.round(repo.stargazers_count / 10), 1000),
         stars: repo.stargazers_count,
         slug: makeSlug(repo.name),
       });
@@ -73,7 +73,7 @@ async function fetchHackerNews() {
       url: story.url,
       github_url: null,
       tags: ["hackernews", "trending"],
-      trend_score: story.score,
+      trend_score: Math.min(story.score * 3, 1000),
       stars: story.score,
       slug: makeSlug(`hn-${story.id}`),
     });
