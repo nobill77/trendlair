@@ -49,7 +49,7 @@ async function fetchProductHunt() {
     url: node.url,
     source: 'product_hunt',
     votes: node.votesCount,
-    trend_score: node.votesCount,
+    trend_score: Math.min(node.votesCount * 5, 1000),
     thumbnail: node.thumbnail?.url || null,
     tags: node.topics.edges.map(e => e.node.name),
     created_at: node.createdAt,
