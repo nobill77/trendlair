@@ -60,7 +60,7 @@ async function fetchSubredditRSS(subreddit) {
       source: 'reddit',
       type: 'article',
       votes: score,
-      trend_score: score,
+      trend_score: Math.min(score * 4, 1000),
       thumbnail: null,
       tags: [subreddit.toLowerCase(), 'reddit'],
       created_at: updated || new Date().toISOString(),
