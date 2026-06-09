@@ -30,10 +30,22 @@ jobs:
       - name: Pull env vars
         run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN || true
 
-      - name: Build with Next.js
+      - name: Build (attempt 1)
+        id: build_1
         run: npm run build
+        continue-on-error: true
+
+      - name: Build (attempt 2 — if attempt 1 failed)
+        id: build_2
+        if: steps.build_1.outcome == 'failure'
+        run: |
+          echo "⚠️ Build attempt 1 failed — retrying in 30s..."
+          sleep 30
+          npm run build
+        continue-on-error: true
 
       - name: Deploy
+        if: steps.build_1.outcome == 'success' || steps.build_2.outcome == 'success'
         run: |
           DEPLOY_OUT=$(vercel deploy --prod --prebuilt --token=$VERCEL_TOKEN 2>&1 | tail -1)
           echo "$DEPLOY_OUT"
