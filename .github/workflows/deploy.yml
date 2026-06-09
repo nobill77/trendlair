@@ -1,0 +1,37 @@
+name: Deploy to Vercel
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: team_1oNliDboVh2cp2ffS5F5e2CQ
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Link project
+        run: |
+          vercel link --yes --token=$VERCEL_TOKEN --project=trendlair
+
+      - name: Pull env vars
+        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+
+      - name: Build
+        run: |
+          set +e
+          vercel build --prod --token=$VERCEL_TOKEN
+          [ -d ".vercel/output" ] && exit 0 || exit 1
+
+      - name: Deploy
+        run: vercel deploy --prod --prebuilt --token=$VERCEL_TOKEN || true
