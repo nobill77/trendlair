@@ -23,5 +23,6 @@ jobs:
       - run: node scripts/github-fetch.js
       - run: node scripts/producthunt-fetch.js
       - run: node scripts/reddit-fetch.js
+      - run: node scripts/normalize-scores.js
       - run: node scripts/send-alerts.js
 
