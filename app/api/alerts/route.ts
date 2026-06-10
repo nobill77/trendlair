@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase-admin";
 import { NextResponse } from "next/server";
 
 const VALID_TAGS = ["ai", "devtools", "saas", "open-source", "productivity", "all"];
@@ -11,10 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabase = createAdminClient();
 
     const validTags = Array.isArray(tags)
       ? tags.filter((t: string) => VALID_TAGS.includes(t))
@@ -52,10 +49,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabase = createAdminClient();
 
     const { error } = await supabase
       .from("trend_alerts")

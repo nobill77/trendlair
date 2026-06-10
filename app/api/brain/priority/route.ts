@@ -5,15 +5,7 @@
 export const dynamic = 'force-dynamic'
 
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-function getAdminClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
-}
+import { supabase } from "@/lib/supabase";
 
 type SourceStats = {
   source: string;
@@ -34,7 +26,6 @@ type TagStats = {
 
 export async function GET() {
   try {
-    const supabase = getAdminClient();
     const now = new Date();
     const ago24h = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
     const ago7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();

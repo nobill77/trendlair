@@ -5,18 +5,11 @@
 // Scripts already have this key as SUPABASE_SERVICE_KEY (same value, different env name).
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-function getAdminClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
-}
+import { createAdminClient } from "@/lib/supabase-admin";
 
 function authorized(req: NextRequest): boolean {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
   if (!key) return true; // dev mode
   return req.headers.get("authorization") === "Bearer " + key;
 }
@@ -46,7 +39,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "source is required" }, { status: 400 });
   }
 
-  const supabase = getAdminClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("pipeline_runs").insert({
     source,
     items_fetched,
@@ -70,7 +63,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = getAdminClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("pipeline_runs")
     .select("*")
