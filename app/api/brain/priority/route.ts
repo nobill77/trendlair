@@ -2,6 +2,8 @@
 // Answers: which sources are stale, which tags are trending, what to fetch next.
 // No auth required — response contains only aggregate public data.
 
+export const dynamic = 'force-dynamic'
+
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
