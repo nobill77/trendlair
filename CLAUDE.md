@@ -51,6 +51,9 @@ Both projects connect to the **same Supabase instance** (`hefcrjxqsokcmwqytaws.s
 | `newsletter_subscribers` | Trendlair | Email list; `unsubscribed` boolean for opt-out |
 | `trend_alerts` | Trendlair | Radar alert subscribers; stores `tags[]` and `min_score` per user |
 | `founder_clicks` | Shared | Tracks clicks from Trendlair → Lexplair for cross-project analytics |
+| `brain_sessions` | Lexplair | Brain session logs (articles/tools written, errors, doors covered) — run `supabase-brain.sql` |
+| `pipeline_runs` | Trendlair | Fetch pipeline logs (items fetched/new/updated per source) — run `supabase-pipeline.sql` |
+| `article_views` | Lexplair | Per-article view counts |
 | Auth tables | Lexplair | Supabase auth via `@supabase/ssr` |
 
 Lexplair uses three Supabase client variants: `src/lib/supabase/client.ts` (browser), `server.ts` (server), `admin.ts` (service key). Trendlair uses `lib/supabase.ts` (anon) and the service key directly in scripts.
@@ -94,6 +97,8 @@ Hub articles (filename `_hub.md`) are aggregate comparison pages. `src/lib/artic
 
 CTA assignment (`_pick_cta_product`, `_pick_cta_tool`) scores article titles against keyword maps (`PRODUCT_MAP`, `TOOL_MAP`) in `core.py` to auto-select the best product and tool slug for each article's frontmatter. `TOOL_MAP` covers all 22 live tools — see `MASTER_BLUEPRINT.md` for the full tool catalog and ctaTool selection rules.
 
+At the end of each session, `_post_session_report()` POSTs to `https://lexplair.com/api/brain/report` with articles written, doors covered, and errors. Requires `LEXPLAIR_SITE_URL` and optionally `BRAIN_API_SECRET` in `brain.env`. If the endpoint is unreachable, Brain silently continues — the report is advisory.
+
 ### Lexplair Deploy Pipeline (`deploy.yml`)
 Only deploys when commit message starts with `content:`, `feat:`, `fix:`, or `Brain session`. All `vercel` commands run from `lexplair-v2/` (set via `defaults: run: working-directory`). Before deploying, CI removes any `.tsx` containing `dangerouslySetInnerHTML` (common Brain tool bug) and strips remaining TS errors file-by-file. `next.config.js` sets `ignoreBuildErrors: true` for the same reason.
 
@@ -107,8 +112,18 @@ Only deploys when commit message starts with `content:`, `feat:`, `fix:`, or `Br
 - `lexplair-v2/src/data/products.ts` — product catalog with Stripe price IDs
 - `lexplair-v2/src/app/tools/[slug]/page.tsx` — tool renderer with `STATIC_COMPONENTS` map (22 tools registered; all hand-written tools must be added here)
 - `lexplair-v2/content/[door]/config.json` — per-door Brain configuration
+- `lexplair-v2/supabase-brain.sql` — `brain_sessions` table migration (run once in Supabase SQL Editor)
 - `status.json` — Brain's task queue and session state (repo root)
 - `.last_task` — last completed task name, used in git commit messages
+
+### Lexplair Internal API
+| Endpoint | Method | Purpose | Auth |
+|---|---|---|---|
+| `/api/brain/report` | POST | Log Brain session (articles, tools, errors) | `BRAIN_API_SECRET` |
+| `/api/brain/report` | GET | Read last 20 sessions | `BRAIN_API_SECRET` |
+| `/api/brain/priority` | GET | Content gap analysis across all 4 doors | None |
+| `/api/articles/views` | POST | Increment view count for a slug | None |
+| `/api/articles/views` | GET | Read view count(s); `?slug=` for one, no param for top 50 | None |
 
 ### Lexplair Content Frontmatter
 ```yaml
@@ -135,11 +150,13 @@ Every article must end with a legal disclaimer and a `## Sources` section citing
 
 ### Data Pipeline
 Runs every 6 hours via `fetch-data.yml`. Scripts execute in order:
-1. `github-fetch.js` — GitHub search API (trending topics) + HackerNews top stories + Product Hunt top posts → upsert into `items` by `external_id`
+1. `github-fetch.js` — GitHub search API (trending topics) + HackerNews top stories + Product Hunt top posts → upsert into `items` by `external_id`; posts run report to `/api/brain/report` after each source
 2. `producthunt-fetch.js` — supplemental PH fetch
 3. `reddit-fetch.js` — Reddit trending posts
 4. `normalize-scores.js` — re-normalizes `trend_score` per source (GitHub: stars÷10 capped 1000; HN: score×3; PH: votes×5; Reddit: score×4)
 5. `send-alerts.js` — calculates `opportunityScore` (trend signal + freshness + star range bonus) and emails subscribers with score ≥ threshold
+
+HackerNews uses upsert (not delete+insert) since the fix in `github-fetch.js` — no more data gap during HN refresh.
 
 Weekly newsletter (`newsletter.yml`) fires every Sunday at 09:00 UTC — fetches top 10 `items` from the past 7 days by `trend_score` and sends to all active `newsletter_subscribers` via Resend.
 
@@ -163,6 +180,16 @@ Triggers on every push to main. Uses `vercel link --project=trendlair` (no `.ver
 - `supabase-setup.sql` — main `items` table schema
 - `supabase-newsletter.sql` — `newsletter_subscribers` table
 - `supabase-founder-clicks.sql` — `founder_clicks` cross-project tracking table
+- `supabase-pipeline.sql` — `pipeline_runs` table migration (run once in Supabase SQL Editor)
+
+### Trendlair Internal API
+| Endpoint | Method | Purpose | Auth |
+|---|---|---|---|
+| `/api/brain/report` | POST | Log pipeline run (source, items fetched/new, errors) | `SUPABASE_SERVICE_ROLE_KEY` |
+| `/api/brain/report` | GET | Read last 30 pipeline runs | `SUPABASE_SERVICE_ROLE_KEY` |
+| `/api/brain/priority` | GET | Source staleness + trending tag analysis | None |
+| `/api/alerts` | POST | Subscribe to radar alerts | None |
+| `/api/alerts` | DELETE | Unsubscribe from radar alerts | None |
 
 ---
 
@@ -211,6 +238,8 @@ Raw scores stored by fetchers may be un-normalized (stars direct from API). Alwa
 Two different names are used intentionally — they are **not** a bug:
 - `SUPABASE_SERVICE_KEY` — GitHub Actions Secret; used by all scripts in `scripts/` and referenced in `fetch-data.yml` + `newsletter.yml`
 - `SUPABASE_SERVICE_ROLE_KEY` — Vercel env var; used by Next.js API routes in `app/api/`
+
+All API routes that need the service role key use `lib/supabase-admin.ts` which tries `SUPABASE_SERVICE_ROLE_KEY` first and falls back to `SUPABASE_SERVICE_KEY`. This ensures they work in both environments. Never inline `createClient(url, process.env.SUPABASE_SERVICE_ROLE_KEY!)` directly in routes — always import `createAdminClient` from `lib/supabase-admin`.
 
 ### Trendlair — founder_clicks table
 The `founder_clicks` table is created once via `supabase-founder-clicks.sql` (run manually in Supabase SQL Editor). Do **not** attempt runtime DDL — the `exec_sql` RPC function does not exist in standard Supabase. The `app/api/track-founder-click/route.ts` handler just inserts directly.
