@@ -14,6 +14,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       PRODUCT_HUNT_TOKEN: ${{ secrets.PRODUCT_HUNT_TOKEN }}
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      TRENDLAIR_SITE_URL: https://trendlair.com
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

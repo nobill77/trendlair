@@ -43,3 +43,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 }
+
+// DELETE /api/alerts — unsubscribe from radar alerts
+export async function DELETE(request: Request) {
+  try {
+    const { email } = await request.json();
+    if (!email || !email.includes("@")) {
+      return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { error } = await supabase
+      .from("trend_alerts")
+      .update({ active: false })
+      .eq("email", email);
+
+    if (error) {
+      return NextResponse.json({ ok: false }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ ok: false }, { status: 500 });
+  }
+}
