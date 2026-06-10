@@ -92,7 +92,7 @@ Hub articles (filename `_hub.md`) are aggregate comparison pages. `src/lib/artic
 5. Saves `.md` to `lexplair-v2/content/` and `.tsx` tool components to `lexplair-v2/src/components/tools/`
 6. Commits with `content:` prefix and pushes to main
 
-CTA assignment (`_pick_cta_product`, `_pick_cta_tool`) scores article titles against keyword maps (`PRODUCT_MAP`, `TOOL_MAP`) in `core.py` to auto-select the best product and tool slug for each article's frontmatter.
+CTA assignment (`_pick_cta_product`, `_pick_cta_tool`) scores article titles against keyword maps (`PRODUCT_MAP`, `TOOL_MAP`) in `core.py` to auto-select the best product and tool slug for each article's frontmatter. `TOOL_MAP` covers all 22 live tools — see `MASTER_BLUEPRINT.md` for the full tool catalog and ctaTool selection rules.
 
 ### Lexplair Deploy Pipeline (`deploy.yml`)
 Only deploys when commit message starts with `content:`, `feat:`, `fix:`, or `Brain session`. All `vercel` commands run from `lexplair-v2/` (set via `defaults: run: working-directory`). Before deploying, CI removes any `.tsx` containing `dangerouslySetInnerHTML` (common Brain tool bug) and strips remaining TS errors file-by-file. `next.config.js` sets `ignoreBuildErrors: true` for the same reason.
@@ -105,7 +105,7 @@ Only deploys when commit message starts with `content:`, `feat:`, `fix:`, or `Br
 - `lexplair-v2/src/lib/articles.ts` — article parsing and routing logic
 - `lexplair-v2/src/data/tools.ts` — tool registry
 - `lexplair-v2/src/data/products.ts` — product catalog with Stripe price IDs
-- `lexplair-v2/src/app/tools/[slug]/page.tsx` — tool renderer with `STATIC_COMPONENTS` map
+- `lexplair-v2/src/app/tools/[slug]/page.tsx` — tool renderer with `STATIC_COMPONENTS` map (22 tools registered; all hand-written tools must be added here)
 - `lexplair-v2/content/[door]/config.json` — per-door Brain configuration
 - `status.json` — Brain's task queue and session state (repo root)
 - `.last_task` — last completed task name, used in git commit messages
@@ -187,6 +187,17 @@ Brain writes `.tsx` via Python — template literals break because Python escape
 - Always `return notFound()`, never bare `notFound()`
 - State filter tools must include all 50 US states — never a partial list
 
+### Lexplair — Tool registration (hand-written tools)
+Every tool component written by hand (not Brain) needs three things:
+1. `comingSoon: false` in `lexplair-v2/src/data/tools.ts`
+2. Named import added to `lexplair-v2/src/app/tools/[slug]/page.tsx`
+3. Entry in the `STATIC_COMPONENTS` map in that same file
+
+Brain-generated tools use the dynamic import fallback (`@/components/tools/{ComponentName}`) and do NOT need manual registration — but CI deletes any Brain tool containing `dangerouslySetInnerHTML`, so Brain tools must use native React (`useState`) only. Never use `dangerouslySetInnerHTML` in any tool component.
+
+### Lexplair — ctaTool frontmatter
+Article frontmatter `ctaTool` must be a slug that exists in `tools.ts`. If the slug is missing, the article CTA silently disappears. Valid slugs are in `MASTER_BLUEPRINT.md` → Tool Catalog. When adding a new planned tool slug to content, also add a `comingSoon: true` stub to `tools.ts` so the CTA renders.
+
 ### Trendlair — `searchParams` is a Promise in Next.js 16
 ```typescript
 // Correct (Next.js 16):
@@ -195,6 +206,14 @@ const params = await searchParams;
 
 ### Trendlair — Score normalization
 Raw scores stored by fetchers may be un-normalized (stars direct from API). Always run `normalize-scores.js` after bulk imports to keep `trend_score` on the 0–1000 scale.
+
+### Trendlair — Supabase env var naming (two environments)
+Two different names are used intentionally — they are **not** a bug:
+- `SUPABASE_SERVICE_KEY` — GitHub Actions Secret; used by all scripts in `scripts/` and referenced in `fetch-data.yml` + `newsletter.yml`
+- `SUPABASE_SERVICE_ROLE_KEY` — Vercel env var; used by Next.js API routes in `app/api/`
+
+### Trendlair — founder_clicks table
+The `founder_clicks` table is created once via `supabase-founder-clicks.sql` (run manually in Supabase SQL Editor). Do **not** attempt runtime DDL — the `exec_sql` RPC function does not exist in standard Supabase. The `app/api/track-founder-click/route.ts` handler just inserts directly.
 
 ---
 
