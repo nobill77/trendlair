@@ -3,6 +3,7 @@
 // No auth required — response contains only aggregate public data.
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";

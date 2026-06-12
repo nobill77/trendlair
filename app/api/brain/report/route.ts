@@ -4,6 +4,9 @@
 // Auth: Authorization: Bearer <SUPABASE_SERVICE_ROLE_KEY>
 // Scripts already have this key as SUPABASE_SERVICE_KEY (same value, different env name).
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 

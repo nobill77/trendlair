@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 import { createAdminClient } from "@/lib/supabase-admin";
 import { NextResponse } from "next/server";
 
